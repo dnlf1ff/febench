@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "febench"
-version = "0.1.0"
+version = "0.2.0"
 authors = [
   { name = "Yujin Kang", email = "yjkang@snu.ac.kr" },
   ]
@@ -44,5 +44,5 @@ packages = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/dnlf1ff/fe"
-Issues = "https://github.com/dnlf1ff/fe/issues"
+Homepage = "https://github.com/dnlf1ff/febench"
+Issues = "https://github.com/dnlf1ff/febench/issues"
