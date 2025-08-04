@@ -1,0 +1,48 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+    "numpy",
+]
+build-backend = "setuptools.build_meta"
+# backend-path = ["."]
+
+
+[project]
+name = "febench"
+version = "0.1.0"
+authors = [
+  { name = "Yujin Kang", email = "yjkang@snu.ac.kr" },
+  ]
+
+description = "python package for reproducing the following paper: S. E. Restrepo, N. K. Mohandas, M. Sluiter, and A. T. Paxton, Applicability of universal machine learning interatomic potentials to the simulation of steels, Model. Simul. Mater. Sci. Eng. (2025)."
+
+readme = "README.md"
+requires-python = ">=2.7"
+dependencies = [
+    "ase",
+    "matscipy",
+    "numpy",
+    "tqdm",
+]
+
+
+[project.scripts]
+febench = "febench.main:main"
+febench-run = "febench.main:main"
+febench-pureFe = "febench.pureFe.script:main"
+febench-carbon = "febench.carbon.script:main"
+febench-tm = "febench.tm.script:main"
+
+[tool.setuptools]
+packages = [
+    "febench",
+    "febench.pureFe",
+    "febench.carbon",
+    "febench.tm",
+    "febench.util",
+]
+
+[project.urls]
+Homepage = "https://github.com/dnlf1ff/fe"
+Issues = "https://github.com/dnlf1ff/fe/issues"
