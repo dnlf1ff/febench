@@ -1,0 +1,113 @@
+---
+
+a1:
+    carbon: [0.5, 0.5, 0]
+    vacancy: [0.5, 0.5, 0.5]
+    n_carbon: 1
+    n_vacancy: 1
+
+a2:
+    carbon: [1, 0, 0.5]
+    vacancy: [0.5, 0.5, 0.5]
+    n_carbon: 1
+    n_vacancy: 1
+
+
+b1:
+    carbon: [0.5, 1, 0.5]
+    vacancy: [[0.5, 0.5, 0.5], [0.5, 1.5, 0.5]]
+    n_carbon: 1
+    n_vacancy: 2
+
+
+b2:
+    carbon: [1, 0.5,0] 
+    vacancy: [[0.5, 0.5, 0.5], [0.5, 1.5, 0.5]]
+    n_carbon: 1
+    n_vacancy: 2
+
+b3:
+    carbon: [0.5, 0, 0.5] 
+    vacancy: [[0.5, 0.5, 0.5], [0.5, 1.5, 0.5]]
+    n_carbon: 1
+    n_vacancy: 2
+
+
+c1:
+    carbon: [0.5, 0.5, 1]
+    vacancy: [[0.5, 0.5, 0.5], [1, 0, 0]]
+    n_carbon: 1
+    n_vacancy: 2
+
+
+c2:
+    carbon: [0.5, 0.5, 0]
+    vacancy: [[0.5, 0.5, 0.5], [1, 0, 0]]
+    n_carbon: 1
+    n_vacancy: 2
+
+
+d:
+    carbon: [[0.5, 0.5, 0], [0.5, 0.5, 1]]
+    vacancy: []
+    n_carbon: 2
+    n_vacancy: 0
+
+e:
+    carbon: [[1, 0.5, 0], [0.5, 0.5, 1]]
+    vacancy: []
+    n_carbon: 2
+    n_vacancy: 0
+
+
+f:
+    carbon: [[1, 0.5, 0], [0, 1.5, 1]]
+    vacancy: []
+    n_carbon: 2
+    n_vacancy: 0
+
+g:
+    carbon: [[1, 0, 0.5], [1, 1, 0.5]]
+    vacancy: []
+    n_carbon: 2
+    n_vacancy: 0
+  
+h:
+    carbon: [[0.5, 0.5, 1], [0.5, 1, 0.5]]
+    vacancy: []
+    n_carbon: 2
+    n_vacancy: 0
+  
+i:
+    carbon: [[0.5, 0.5, 1], [1, 0, 0.5]]
+    vacancy: []
+    n_carbon: 2
+    n_vacancy: 0
+  
+j:
+    carbon: [[0.5, 0.5, 0], [0.5, 0.5, 1]]
+    vacancy: [0.5, 0.5, 0.5]
+    n_carbon: 2
+    n_vacancy: 1
+  
+ 
+k:
+    carbon: [[0.5, 0.5, 0], [0.5, 0, 0.5]]
+    vacancy: [0.5, 0.5, 0.5]
+    n_carbon: 2
+    n_vacancy: 1
+ 
+ 
+l:
+    carbon: [[0.5, 0.5, 0.25], [0.5, 0.5, 0.75]]
+    vacancy: [0.5, 0.5, 0.5]
+    n_carbon: 2
+    n_vacancy: 1
+ 
+m:
+    carbon: [[0.5, 0.75, 0.25], [0.5, 0.25, 0.75]]
+    vacancy: [0.5, 0.5, 0.5]
+    n_carbon: 2
+    n_vacancy: 1
+
+

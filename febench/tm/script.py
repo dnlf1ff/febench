@@ -32,7 +32,7 @@ def process_tm(config, calc):
     a = fe_base(config)
 
     sols = config["tm"]["solute"]
-    df = pd.DataFrame(columns = [['E_FeM']]+[f'E_FeMM_{int(i+1)}nn' for i in range(5)]+[f'E_FeMVac_{int(i+1)}nn' for i in range(5)], index = sols)
+    df = pd.DataFrame(columns = ['E_FeM']+[f'E_FeMM_{int(i+1)}nn' for i in range(5)]+[f'E_FeMVac_{int(i+1)}nn' for i in range(5)], index = sols)
 
     for sol in sols:
         sol_list = []

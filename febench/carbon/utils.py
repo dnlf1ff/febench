@@ -23,6 +23,10 @@ def find_vac_idx(atoms, a, vac_pos):
     z_indices = np.where(z_pos==z)[0]
 
     index = set(x_indices) & set(y_indices) & set(z_indices)
+    print(x_indices)
+    print(y_indices)
+    print(z_indices)
+    print(index)
     return int(list(index)[0])
 
 

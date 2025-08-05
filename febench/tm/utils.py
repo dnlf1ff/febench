@@ -43,14 +43,15 @@ def write_poscar_from_config(config, solute, a):
     write(f'{struct_dir}/POSCAR_{solute}', base, format='vasp')
 
     for i, nn_pos in enumerate([nn1_pos, nn2_pos, nn3_pos, nn4_pos, nn5_pos]):
-        nn_idx = find_nn_idx(base, nn_pos, a)
-        del base[nn_idx]
+        base_copy = base.copy()
+        nn_idx = find_nn_idx(base_copy, nn_pos, a)
+        del base_copy[nn_idx]
 
         # Fe(n-2)MVac
-        write(f'{struct_dir}/POSCAR_{solute}_vac_{int(i+1)}nn', base, format='vasp')
+        write(f'{struct_dir}/POSCAR_{solute}_vac_{int(i+1)}nn', base_copy, format='vasp')
 
         # Fe(n-2)M(2)
-        base.append(solute)
-        base.positions[-1] = np.array(nn_pos) * a
-        write(f'{struct_dir}/POSCAR_{solute}_{solute}_{int(i+1)}nn', base, format='vasp')
+        base_copy.append(solute)
+        base_copy.positions[-1] = np.array(nn_pos) * a
+        write(f'{struct_dir}/POSCAR_{solute}_{solute}_{int(i+1)}nn', base_copy, format='vasp')
 
