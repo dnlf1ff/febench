@@ -7,11 +7,12 @@ S. E. Restrepo, N. K. Mohandas, M. Sluiter, and A. T. Paxton, Applicability of u
 pip install -e .
 
 ### Usage
-for command line interface .. use 
-febench --config ./config.yaml --calc omni --modal omat24 --carbon_config ./carbon_config.yaml
+for command line interface .. use   
+febench --config ./config.yaml --calc omni --modal omat24 --carbon_config ./carbon_config.yaml  
+
 indicated arguments above are the default argument of the parser
 
-to run pure iron, carbon in iron, and transition metal solute/vacancy interactions
+to run pure iron, carbon in iron, and transition metal solute/vacancy interactions  
 you can also tweak the config.yaml's 'run' key's value to false to skip a certain type of calculation
 
 other command lines available
