@@ -1,3 +1,3 @@
 #!/bin/bash
 
-febench --config ./config.yaml --modal omat24 --calc ompa --potential_path . --potential_ext pth
+febench --config ./config.yaml --calc 7net-0 --potential_path .

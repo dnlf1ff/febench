@@ -15,27 +15,18 @@ import numpy as np
 import gc
 import torch
 
-def fe_base(config):
-    bulk_df = pd.read_csv(f'{config["pureFe"]["save"]}/bulk.csv')
-    a = bulk_df['a'][1]/config["pureFe"]["bulk"]["supercell"][1]
-    struct_dir = f'{config["tm"]["save"]}/structure'
-
-    fe_unit = BodyCenteredCubic(directions=np.diag([1,1,1]), size=(1,1,1), symbol='Fe', pbc=True, latticeconstant=a)
-    atoms = make_supercell(fe_unit, np.diag(config["tm"]["supercell"]))
-    write(f'{struct_dir}/POSCAR_base', atoms, format='vasp')
-    return a
-
 def process_tm(config, calc):
     save_dir = config["tm"]["save"]
     struct_dir = f'{config["tm"]["save"]}/structure'
     log_dir = f'{config["tm"]["save"]}/log'
 
-    a = fe_base(config)
-
     atoms_bulk = read(f'{config["pureFe"]["save"]}/structure/bulk_opt.extxyz')
     E_Fe = atoms_bulk.info['e_fr_energy']
+    a = atoms_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
+
     atoms_vac = read(f'{config["pureFe"]["save"]}/structure/vac_opt.extxyz')
     E_FeVac = atoms_vac.info['e_fr_energy']
+
     del atoms_bulk, atoms_vac
     gc.collect()
 

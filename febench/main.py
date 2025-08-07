@@ -49,8 +49,7 @@ def main(argv: list[str] | None=None) -> None:
    
     config['calculator']['calc_type'] = calc_type
     config['calculator']['prefix'] = calc
-    if modal.lower != 'null':
-        config['calculator']['modal'] = modal
+    config['calculator']['modal'] = modal
     config['calculator']['path'] = potential_path
     config['calculator']['extension'] = potential_ext
 
@@ -71,6 +70,9 @@ def main(argv: list[str] | None=None) -> None:
 
     if config['pureFe']['stiffness']['run']:
         process_stiffness(config, calc)
+
+    if config['pureFe']['post']['run']:
+        post_process(config)
 
     if config['carbon']['run']:
         process_carbon(config, calc)

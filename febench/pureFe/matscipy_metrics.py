@@ -1,7 +1,7 @@
 import numpy as np
 
 '''
-Bulk modulus by HK
+Code received from Haekwan Jeon
 '''
 
 def get_voigt_bulk_modulus(elastic_matrix):

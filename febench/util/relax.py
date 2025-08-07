@@ -11,7 +11,7 @@ FILTER_DICT = {'frechet': FrechetCellFilter, 'unitcell': UnitCellFilter}
 
 
 """
-from KJS
+modified based on Jaesun Kim's code
 """
 
 class AseAtomRelax:

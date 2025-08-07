@@ -11,7 +11,7 @@ from febench.util.utils import dumpYAML
 from febench.util.parse_args import parse_base_args
 from febench.util.parse_config import parse_config_yaml
 
-from febench.pureFe.utils import get_slab, get_surface_ref_bulk, get_Cij, get_elastic_constants, write_csv
+from febench.pureFe.utils import write_fe_base, get_slab, get_Cij, get_elastic_constants, write_csv,EvAToJm
 
 from matscipy.elasticity import fit_elastic_constants
 
@@ -42,6 +42,9 @@ def process_bulk(config, calc):
     write(f"{struct_dir}/bulk_opt.extxyz", atoms, format='extxyz')
     write(f"{struct_dir}/CONTCAR_bulk", atoms, format='vasp')
     write_csv(csv_file, atoms, idx='bulk-post')
+
+    a0 = atoms.info['a']/config['pureFe']['bulk']['supercell'][0]
+    write_fe_base(config, a0)
 
     print('relaxation for 4 by 4 by 4 cell -- done')
     csv_file.close()
@@ -128,9 +131,50 @@ def process_stiffness(config, calc):
     tensor_df = get_Cij(C_least_squares)
     tensor_df.to_csv(f'{save_dir}/Cij.csv', index_label='row-column')
 
+def post_process(config):
+    # ugly and explicit .. only for pureFe
+    save_dir = config["pureFe"]["save"]
+
+    df = pd.read_csv(f'{save_dir}/bulk.csv', index_col='idx')
+    a = df.loc['bulk-post']['a']/config['pureFe']['bulk']['supercell'][0]
+    E_bulk = df.loc['bulk-post']['energy']
+    n_bulk = df.loc['bulk-post']['natom']
+    E_vac = df.loc['vac-post']['energy']
+    E_vac_f = E_vac - (n_bulk - 1) * E_bulk / n_bulk
+
+    E_100 = df.loc['100-post']['energy']
+    A_100 = df.loc['100-post']['surface_area']
+    E_110 = df.loc['110-post']['energy']
+    A_110 = df.loc['110-post']['surface_area']
+    E_111 = df.loc['111-post']['energy']
+    A_111 = df.loc['111-post']['surface_area']
+    E_ref = E_bulk * 320/128
+
+    E_100_f = (E_100 - E_ref)/ (2*A_100) * EvAToJm
+    E_110_f = (E_110 - E_ref)/ (2*A_110) * EvAToJm
+    E_111_f = (E_111 - E_ref)/ (2*A_111) * EvAToJm
+
+    df_Cij= pd.read_csv(f'{save_dir}/Cij.csv', index_col='row-column')
+
+    # B = (C11 + 2*C12)/3
+    # C_prime = (C11-C12)/2
+    B = (df_Cij.loc['i1']['j1'] + 2 * df_Cij.loc['i1']['j2'])/3
+    C_prime = (df_Cij.loc['i1']['j1'] - df_Cij.loc['i1']['j2'])/2
+    C44 = df_Cij.loc['i4']['j4']
+
+    property_keys = ['a0','E_vac_f', 'E_100_f', 'E_110_f', 'E_111_f', 'B', 'C_prime', 'C44']
+    df_pureFe = pd.DataFrame(index=property_keys)
+
+    pureFe_props = [a, E_vac_f, E_100_f, E_110_f, E_111_f, B, C_prime, C44]
+    df_pureFe[config['calculator']['prefix']] = pureFe_props
+
+    df_pureFe.index.name = 'property'
+    df_pureFe.to_csv(f'{save_dir}/pureFe_properties.csv', index_label='property')
+
 def main(argv: list[str] | None=None) -> None:
     from febench.util.calc import calc_from_config
     import yaml
+
     args = parse_base_args(argv)
     config_dir = args.config
     calc_type = args.calc_type
@@ -166,6 +210,8 @@ def main(argv: list[str] | None=None) -> None:
     if config['pureFe']['stiffness']['run']:
         process_stiffness(config, calc)
 
+    if config['pureFe']['post']['run']:
+        post_process(config)
 
 if __name__ == '__main__':
     main()

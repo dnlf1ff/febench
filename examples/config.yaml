@@ -23,15 +23,15 @@ pureFe:
     bulk:
         supercell: [4, 4, 4]
         opt: ortho
-        run: false
+        run: true
 
     vacancy:
         opt: vc-relax
-        run: false
+        run: true
 
     migration:
         supercell: [3,3,3]
-        run: false
+        run: true
         opt: relax
 
     surface:
@@ -39,17 +39,19 @@ pureFe:
         supercell: [4,4,20]
         vacuum: 10
         opt: relax
-        run: false
+        run: true
 
 
     stiffness: 
         delta: 0.005
         Nsteps: 4
-        run: false
+        run: true
 
+    post:
+        run: true
 carbon:
     save: ./carbon
-    run: false
+    run: true
     supercell: [4,4,4]
     opt: ortho
     config: ./carbon_config.yaml

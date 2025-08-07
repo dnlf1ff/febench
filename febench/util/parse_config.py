@@ -4,7 +4,7 @@ def check_calc_config(config):
     config_calc = config['calculator']
     assert config_calc['calc_type'].lower() in ['sevennet', 'sevennet-batch', 'custom']
     assert isinstance(config_calc['path'], str)
-    assert os.path.isfile(potential := f'{config_calc["path"]}/{config_calc["prefix"]}.pth'), f'MLIP potential not found at {potential}'
+    assert os.path.isfile(potential := f'{config_calc["path"]}/{config_calc["prefix"]}.{config_calc["extension"]}'), f'MLIP potential not found at {potential}'
 
 
 def check_data_config(config):
@@ -30,8 +30,11 @@ def check_tm_config(config):
 
 def update_config_dirs(config):
     prefix = config['calculator']['prefix']
-    if '7net' not in prefix:
-        prefix = f"{prefix}/{config['calculator']['calc_args']['modal']}"
+
+    if config['calculator'].get('modal', None) in ['mpa', 'omat24']: # for now
+        config['calculator']['calc_args']['modal'] = config['calculator']['modal']
+        prefix = f"{config['calculator']['prefix']}/{config['calculator']['modal']}"
+
     config['data']['cwd'] = (cwd := f"./mlip/{prefix}")
 
     os.makedirs(cwd, exist_ok=True)
@@ -44,7 +47,7 @@ def update_config_dirs(config):
         config['opt'][opt_type]['logfile'] = cwd + f"/{config['opt'][opt_type]['logfile']}"
 
     for task in tasks:
-        if (save_path := config[task].get('save')) is not None:
+        if (save_path := config[task].get('save', None)) is not None:
             config[task]['save'] = f"{cwd}/{save_path}"
     return config
 
@@ -57,11 +60,8 @@ def parse_config_yaml(config):
     check_carbon_config(config)
     check_tm_config(config)
 
-    config['root'] = os.path.abspath(os.getcwd())
+    config['root'] = os.path.abspath(os.getcwd()) # short stopper
     config['cwd'] = os.path.join(os.path.abspath(os.getcwd()), config['data']['cwd'])
     config['output'] = os.path.join(config['root'], 'output')
-
-    if config['calculator']['prefix'] == '7net-0':
-        config['calculator']['calc_args'].pop('modal')
 
     return config

@@ -29,7 +29,7 @@ def write_poscar_from_config(config, solute, a):
     nn5_pos = pos_dict['5nn']
 
     # Fe(n-1)M
-    base = read(f'{struct_dir}/POSCAR_base', format='vasp')
+    base = read(f'{config["cwd"]}/POSCAR_base', format='vasp')
     base_idx = find_nn_idx(base, base_pos, a)
     del base[base_idx]
     base.append(solute)

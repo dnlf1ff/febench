@@ -31,3 +31,11 @@ febench-tm to only run transition metal solute/vacancy interactions
 
 or tweak config.yaml's 'run' key-value
 
+### environment
+micromamba create -n febench python=3.11
+
+pip install torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install torch==2.5.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install torch-scatter -f https://data.pyg.org/whl/torch-2.5.1+cu121.html
+
+pip install sevenn ase matscipy

@@ -27,7 +27,7 @@ def write_FeC(config, a):
     carbon_pos = [0.5, 0.5, 0]
     struct_dir = f'{config["carbon"]["save"]}/structure'
     # Fe(n)
-    base = read(f'{struct_dir}/POSCAR_base', format='vasp')
+    base = read(f'{config["cwd"]}/POSCAR_base', format='vasp')
     # Fe(n)C
     base.append('C')
     base.positions[-1] = a * np.array(carbon_pos) 
@@ -39,7 +39,7 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
 
     struct_dir = f'{config["carbon"]["save"]}/structure'
     # Fe(n)
-    base = read(f'{struct_dir}/POSCAR_base', format='vasp')
+    base = read(f'{config["cwd"]}/POSCAR_base', format='vasp')
 
     # for Fe(n)C
     base_carbon = base.copy()

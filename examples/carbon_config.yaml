@@ -49,24 +49,25 @@ c2:
     n_carbon: 1
     n_vacancy: 2
 
-d: # disguised as i at Figure 2
-    carbon: [[0.5, 0.5, 1], [1, 0, 0.5]]
+d:
+    carbon: [[1, 0.5, 0], [0, 1.5, 1]]
     vacancy: []
     n_carbon: 2
     n_vacancy: 0
- 
+
+
 e:
     carbon: [[1, 0.5, 0], [0.5, 0.5, 1]]
     vacancy: []
     n_carbon: 2
     n_vacancy: 0
 
- 
-f: # disguised as d at Figure 2
-    carbon: [[0.5, 0.5, 0], [0.5, 0.5, 1]]
+f:
+    carbon: [[0.5, 0.5, 1], [1, 0, 0.5]]
     vacancy: []
     n_carbon: 2
     n_vacancy: 0
+ 
 
 
 g:
@@ -81,12 +82,11 @@ h:
     n_carbon: 2
     n_vacancy: 0
 
-i: # disguised as f at Figure 2
-    carbon: [[1, 0.5, 0], [0, 1.5, 1]]
+i:
+    carbon: [[0.5, 0.5, 0], [0.5, 0.5, 1]]
     vacancy: []
     n_carbon: 2
     n_vacancy: 0
-
 
 j:
     carbon: [[0.5, 0.5, 0], [0.5, 0.5, 1]]

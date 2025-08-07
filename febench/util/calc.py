@@ -18,7 +18,7 @@ except:
     class SevenNetCalculator:
         pass
 """
-from KJS
+modified based on Jaesun Kim's code
 """
 
 class SevenNetBatchCalculator(SevenNetCalculator):
@@ -130,7 +130,7 @@ def calc_from_config(config):
     calc_args = calc_config.get('calc_args', {})
 
     if calc_type == 'sevennet':
-        return SevenNetCalculator(model=calc_config['path']+f'/{calc_config["prefix"]}.pth', **calc_args)
+        return SevenNetCalculator(model=calc_config['path']+f'/{calc_config["prefix"]}.{calc_config["extension"]}', **calc_args)
 
     elif calc_type == 'sevennet-batch':
         batch_size = calc_config.get('batch_size', None)

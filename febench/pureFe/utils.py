@@ -1,13 +1,21 @@
 from ase.build import bcc100, bcc110, bcc111, bulk, make_supercell
+from ase.lattice.cubic import BodyCenteredCubic
 from ase.constraints import FixAtoms
+from ase.io import write
 import numpy as np
 import sys
-
-from ase.units import GPa
 
 from febench.pureFe.matscipy_metrics import *
 
 import pandas as pd
+
+from ase.units import GPa, J, m
+EvAToJm = (m ** 2)/J
+
+def write_fe_base(config, a):
+    fe_unit = BodyCenteredCubic(directions=np.diag([1,1,1]), size=(1,1,1), symbol='Fe', pbc=True, latticeconstant=a)
+    atoms = make_supercell(fe_unit, np.diag(config["carbon"]["supercell"]))
+    write(f'{config["cwd"]}/POSCAR_base', atoms, format='vasp')
 
 def constrain_slab(slab):
     z = slab.positions[:,2].copy()
@@ -30,10 +38,6 @@ def get_slab(hkl, a0, vacuum=10, size=(4,4,20)):
 
     slab = constrain_slab(slab)
     return slab
-
-def get_surface_ref_bulk(a0, size=[4,4,20]):
-    ref = bulk('Fe', 'bcc', a=a0, cubic=True)
-    return make_supercell(ref, np.diag(size))
 
 
 def get_Cij(C_least_squares):

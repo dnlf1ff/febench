@@ -1,7 +1,5 @@
 from ase import Atoms
 from ase.io import write, read
-from ase.build import make_supercell 
-from ase.lattice.cubic import BodyCenteredCubic
 import yaml
 import gc
 import numpy as np
@@ -14,34 +12,23 @@ from febench.carbon.utils import write_poscar_from_config, write_FeC
 import pandas as pd
 import torch
 
-def fe_base(config):
-    bulk_df = pd.read_csv(f'{config["pureFe"]["save"]}/bulk.csv')
-    a = bulk_df['a'][1]/config["pureFe"]["bulk"]["supercell"][0]
-    struct_dir = f'{config["carbon"]["save"]}/structure'
-
-    fe_unit = BodyCenteredCubic(directions=np.diag([1,1,1]), size=(1,1,1), symbol='Fe', pbc=True, latticeconstant=a)
-    atoms = make_supercell(fe_unit, np.diag(config["carbon"]["supercell"]))
-    write(f'{struct_dir}/POSCAR_base', atoms, format='vasp')
-
-    return a
-
 def process_carbon(config, calc):
-    a = fe_base(config)
-    write_FeC(config, a)
-
     save_dir = config["carbon"]["save"]
     struct_dir = f'{config["carbon"]["save"]}/structure'
     log_dir = f'{config["carbon"]["save"]}/log'
+    
+    atoms_bulk = read(f'{config["pureFe"]["save"]}/structure/bulk_opt.extxyz')
+    a = atoms_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
+    E_Fe = atoms_bulk.info['e_fr_energy']
+    n_Fe = len(atoms_bulk)
+
+    write_FeC(config, a)
     
     with open(config["carbon"]["config"], 'r') as f:
         carbon_config = yaml.load(f, Loader=yaml.FullLoader)
 
     csv_file = open(f'{save_dir}/carbon.csv', 'w', buffering = 1)
     csv_file.write('config,E_bind,E_FeVac,n_FeVac,E_FeC,n_FeC,E_Fe,n_Fe,E_FeCVac,n_FeCVac,n_carbon,n_vacancy\n')
-
-    atoms_bulk = read(f'{config["pureFe"]["save"]}/structure/bulk_opt.extxyz')
-    E_Fe = atoms_bulk.info['e_fr_energy']
-    n_Fe = len(atoms_bulk)
 
     atoms_C = read(f'{struct_dir}/POSCAR_C', format='vasp')
     ase_atom_relaxer = aar_from_config(config, calc,opt=config["carbon"]["opt"], logfile = f'{log_dir}/FeC.log')
