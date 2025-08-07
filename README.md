@@ -20,7 +20,7 @@ or febench/main.py for usage on scripts
 holds calc. parameters concerning each task
 primary forcus is to reimplement the aforementioned paper above
 
-#### other command lines available
+### other command lines available
 febench (same with febench-run)
 
 febench-pure to only run pure iron calc.
