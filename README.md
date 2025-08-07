@@ -7,14 +7,18 @@ S. E. Restrepo, N. K. Mohandas, M. Sluiter, and A. T. Paxton, Applicability of u
 pip install -e .
 
 ### Usage
-run the following  command:
-febench --config ./config.yaml --calc omni --modal omat24 --carbon_config ./carbon_config.yaml  
+run the following  command to run the module as a whole
+febench --config ./config.yaml --modal omat24 --calc ompa --potential_path . --potential_ext pth
 
-to run pure iron, carbon in iron, and transition metal solute/vacancy interactions  
+this reads the binary file {args.potential_path}/{args.calc}.{args.potential_ext}
+as an ASE calculator object
 
-(indicated arguments above are the default argument of the parser)  
+go to febench/util/parse_args.py for default arguments pass
+or febench/main.py for usage on scripts
 
-you can also tweak the config.yaml's 'run' key's value to false to skip a certain type of calculation  
+### config.yaml
+holds calc. parameters concerning each task
+primary forcus is to reimplement the aforementioned paper above
 
 #### other command lines available
 febench (same with febench-run)
@@ -24,4 +28,6 @@ febench-pure to only run pure iron calc.
 febench-carbon to only run carbon in iron calc.
 
 febench-tm to only run transition metal solute/vacancy interactions
+
+or tweak config.yaml's 'run' key-value
 

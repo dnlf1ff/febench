@@ -23,7 +23,6 @@ dependencies = [
     "ase",
     "matscipy",
     "numpy",
-    "tqdm",
 ]
 
 

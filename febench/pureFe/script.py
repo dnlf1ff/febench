@@ -13,7 +13,6 @@ from febench.util.parse_config import parse_config_yaml
 
 from febench.pureFe.utils import get_slab, get_surface_ref_bulk, get_Cij, get_elastic_constants, write_csv
 
-
 from matscipy.elasticity import fit_elastic_constants
 
 def process_bulk(config, calc):
@@ -56,8 +55,7 @@ def process_vacancy(config, calc):
     struct_dir = f'{config["pureFe"]["save"]}/structure'
 
     print('running pure Iron sturcture with a vacancy')
-    csv_file = open(f'{save_dir}/vacancy.csv', 'w', buffering=1)
-    csv_file.write('idx,energy,volume,surface_area,natom,a,b,c,alpha,beta,gamma,conv\n')
+    csv_file = open(f'{save_dir}/bulk.csv', 'a', buffering=1)
 
     atoms=read(f'{struct_dir}/CONTCAR_bulk', **config["data"]["load_args"])
     ase_atom_relaxer = aar_from_config(config, calc, opt=config["pureFe"]["vacancy"]["opt"], logfile=f'{log_dir}/vacancy_relax.log')
@@ -85,10 +83,7 @@ def process_surfaces(config, calc):
     log_dir = f'{config["pureFe"]["save"]}/log'
     struct_dir = f'{config["pureFe"]["save"]}/structure'
 
-    surface_ref(config, calc)
-
-    csv_file = open(f"{save_dir}/surface.csv", "w", buffering = 1)
-    csv_file.write('idx,energy,volume,surface_area,natom,a,b,c,alpha,beta,gamma,conv\n')
+    csv_file = open(f"{save_dir}/bulk.csv", "a", buffering = 1)
 
     df = pd.read_csv(f"{save_dir}/bulk.csv")
     a0 = df['a'][1]/config['pureFe']['bulk']['supercell'][0]
@@ -117,38 +112,6 @@ def process_surfaces(config, calc):
     del csv_file
     gc.collect()
 
-def surface_ref(config, calc):
-    print('running bulk relaxation for surface calc. reference')
-    save_dir = config["pureFe"]["save"]
-    log_dir = f'{config["pureFe"]["save"]}/log'
-    struct_dir = f'{config["pureFe"]["save"]}/structure'
-
-    csv_file = open(f"{save_dir}/surface_ref.csv", "w", buffering = 1)
-    csv_file.write('idx,energy,volume,surface_area,natom,a,b,c,alpha,beta,gamma,conv\n')
-    ase_atom_relaxer = aar_from_config(config, calc, opt=config["pureFe"]["bulk"]["opt"], logfile=f'{log_dir}/surface_bulk_relax.log')
-
-    df = pd.read_csv(f"{save_dir}/bulk.csv")
-    a0 = df['a'][1]/config['pureFe']['bulk']['supercell'][0]
-
-    atoms = get_surface_ref_bulk(a0)
-
-    atoms = ase_atom_relaxer.update_atoms(atoms)
-    atoms.calc = None
-    write(f"{struct_dir}/POSCAR_surface_ref", atoms, format='vasp')
-    write_csv(csv_file, atoms, idx='ref-pre')
-
-    atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
-    atoms = ase_atom_relaxer.update_atoms(atoms)
-    atoms.info['conv'] = conv
-    atoms.calc = None
-    write(f"{struct_dir}/surface_ref_opt.extxyz", atoms, format='extxyz')
-    write(f"{struct_dir}/CONTCAR_surface_ref", atoms, format='vasp')
-    write_csv(csv_file, atoms, idx='ref-post')
-
-    csv_file.close()
-    del atoms, csv_file
-    gc.collect()
-
 def process_stiffness(config, calc):
     save_dir = config["pureFe"]["save"]
     log_dir = f'{config["pureFe"]["save"]}/log'
@@ -164,22 +127,29 @@ def process_stiffness(config, calc):
 
     tensor_df = get_Cij(C_least_squares)
     tensor_df.to_csv(f'{save_dir}/Cij.csv', index_label='row-column')
-    # modulus_df = get_elastic_constants(C_least_squares)
-    # modulus_df.to_csv(f'{save_dir}/modulus.csv')
 
 def main(argv: list[str] | None=None) -> None:
     from febench.util.calc import calc_from_config
     import yaml
     args = parse_base_args(argv)
     config_dir = args.config
+    calc_type = args.calc_type
     calc = args.calc
     modal = args.modal
+    potential_path = args.potential_path
+    potential_ext = args.potential_ext
 
     with open(config_dir, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
+    config['calculator']['calc_type'] = calc_type
     config['calculator']['prefix'] = calc
-    config['calculator']['modal'] = modal
+    config['calculator']['path'] = potential_path
+    config['calculator']['extension'] = potential_ext
+
+    if modal.lower() != 'null':
+        config['calculator']['modal'] = modal
+    
     config = parse_config_yaml(config)
     dumpYAML(config, f'{config["cwd"]}/config_pure.yaml')
     calc = calc_from_config(config)

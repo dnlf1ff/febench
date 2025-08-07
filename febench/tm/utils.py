@@ -1,12 +1,6 @@
-from ase import Atoms
 from ase.io import write, read
-from ase.build import make_supercell 
-from ase.lattice.cubic import BodyCenteredCubic
-import yaml
-
-from febench.util.relax import aar_from_config, check_atoms_conv
-import pandas as pd
 import numpy as np
+
 def find_nn_idx(atoms, vac_pos, a):
     x = vac_pos[0] * a
     y = vac_pos[1] * a

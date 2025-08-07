@@ -16,15 +16,43 @@ import warnings
 
 def main(argv: list[str] | None=None) -> None:
     args = parse_base_args(argv)
-    config_dir = args.config
-    calc = args.calc
+
+    # config.yaml file to read
+    config_dir = args.config 
+
+
+    # see util/calc.py for details
+    # mlip type; default is sevennet
+    calc_type = args.calc_type 
+   
+    # will read f'{potential_path}/{calc}.{potential_ext}' as a ASE calc. binary
+    # dir named calc will be automatically generated, being the working directory
+
+    # omni, omat, chgTot, o50~  etc
+    # customizable if you save potential files somewhere else with a coded name)
+    calc = args.calc 
+
+    # dirname of potential file aka what you get when you os.path.dirname($YOUR_POT_FILE)
+    # default value is . 
+    potential_path = args.potential_path
+
+    # extention format of the potential file default value is pth. some potentials use pt
+    potential_ext = args.potential_ext
+
+    # moodal of the potential this will be passed to the ASE.calculator object
+    # default value is null which will be ignored
+    # for ompa and other models that require a modal key value, pass it in the bash script
     modal = args.modal
 
     with open(config_dir, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
    
+    config['calculator']['calc_type'] = calc_type
     config['calculator']['prefix'] = calc
-    config['calculator']['modal'] = modal
+    if modal.lower != 'null':
+        config['calculator']['modal'] = modal
+    config['calculator']['path'] = potential_path
+    config['calculator']['extension'] = potential_ext
 
     config = parse_config_yaml(config)
     dumpYAML(config, f'{config["cwd"]}/config.yaml')
@@ -38,7 +66,7 @@ def main(argv: list[str] | None=None) -> None:
     if config['pureFe']['vacancy']['run']:
         process_vacancy(config, calc)
 
-    if config['pureFe']['surface']:
+    if config['pureFe']['surface']['run']:
         process_surfaces(config, calc)
 
     if config['pureFe']['stiffness']['run']:

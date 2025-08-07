@@ -1,11 +1,5 @@
-from ase import Atoms
 from ase.io import write, read
-from ase.build import make_supercell 
-from ase.lattice.cubic import BodyCenteredCubic
-import yaml
 import numpy as np
-from febench.util.relax import aar_from_config
-import pandas as pd
 import sys
 
 def find_vac_idx(atoms, a, vac_pos):
@@ -23,16 +17,25 @@ def find_vac_idx(atoms, a, vac_pos):
     z_indices = np.where(z_pos==z)[0]
 
     index = set(x_indices) & set(y_indices) & set(z_indices)
-    print(x_indices)
-    print(y_indices)
-    print(z_indices)
-    print(index)
+    # print(x_indices)
+    # print(y_indices)
+    # print(z_indices)
+    # print(index)
     return int(list(index)[0])
 
+def write_FeC(config, a):
+    carbon_pos = [0.5, 0.5, 0]
+    struct_dir = f'{config["carbon"]["save"]}/structure'
+    # Fe(n)
+    base = read(f'{struct_dir}/POSCAR_base', format='vasp')
+    # Fe(n)C
+    base.append('C')
+    base.positions[-1] = a * np.array(carbon_pos) 
+    write(f'{struct_dir}/POSCAR_C', base, format='vasp')
+    return
 
 def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_pos):
     # Fe(n)C, Fe(n-q)Vac(q), Fe(n-q)C(p)Vac(q)
-
 
     struct_dir = f'{config["carbon"]["save"]}/structure'
     # Fe(n)
@@ -40,10 +43,8 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
 
     # for Fe(n)C
     base_carbon = base.copy()
-    print(n_carbon, n_vac)
 
     if n_carbon == 1 and n_vac == 1:
-        print(f'1 carbon, 1 vacancy')
         vac_idx = find_vac_idx(base, a, vac_pos)
         # Fe(n-q)Vac(q)
         del base[vac_idx]
@@ -53,15 +54,10 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
         base.append('C')
         base.positions[-1] = a * np.array(carbon_pos) 
 
-        # Fe(n)C
-        base_carbon.append('C')
-        base_carbon.positions[-1] = a * np.array(carbon_pos) 
         write(f'{struct_dir}/POSCAR_{label}', base, format='vasp')
-        write(f'{struct_dir}/POSCAR_{label}_C_1', base_carbon, format='vasp')
         return
 
     if n_carbon == 1 and n_vac == 2:
-        print(f'1 carbon, 2 vacanceis')
         # Fe(n-q)Vac(q)
         vac_idx_1 = find_vac_idx(base, a, vac_pos[0])
         del base[vac_idx_1]
@@ -73,46 +69,25 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
         base.append('C')
         base.positions[-1] = a * np.array(carbon_pos) 
 
-        # Fe(n)C
-        base_carbon.append('C')
-        base_carbon.positions[-1] = a * np.array(carbon_pos) 
         write(f'{struct_dir}/POSCAR_{label}', base, format='vasp')
-        write(f'{struct_dir}/POSCAR_{label}_C_1', base_carbon, format='vasp')
         return
 
 
     if n_carbon == 2 and n_vac == 0:
-        print(f'2 carbons, 0 vacanceis')
-        # two types of Fe(n)C ...
-        base_carbon_2 = base_carbon.copy()
-
         carbon_pos_1 = carbon_pos[0]
         base.append('C')
         base.positions[-1] = a * np.array(carbon_pos_1) 
-
-        # Fe(n)C type 1...
-        base_carbon.append('C')
-        base_carbon.positions[-1] = a * np.array(carbon_pos_1) 
 
         # Fe(n-q)C(p)Vac(q) q=0, p=2
         carbon_pos_2 = carbon_pos[1]
         base.append('C')
         base.positions[-1] = a * np.array(carbon_pos_2) 
 
-        # Fe(n)C type 2...
-        base_carbon_2.append('C')
-        base_carbon_2.positions[-1] = a * np.array(carbon_pos_2) 
-        write(f'{struct_dir}/POSCAR_{label}_C_2', base_carbon_2, format='vasp')
         write(f'{struct_dir}/POSCAR_{label}', base, format='vasp')
-        write(f'{struct_dir}/POSCAR_{label}_C_1', base_carbon, format='vasp')
         return
 
 
     if n_carbon == 2 and n_vac == 1:
-        print(f'2 carbons, 1 vacancy')
-        # two types of Fe(n)C ...
-        base_carbon_2 = base_carbon.copy()
-
         # Fe(n-q)Vac(q)
         vac_idx = find_vac_idx(base, a, vac_pos)
         del base[vac_idx]
@@ -122,25 +97,16 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
         base.append('C')
         base.positions[-1] = a * np.array(carbon_pos_1) 
 
-        # Fe(n)C type 1...
-        base_carbon.append('C')
-        base_carbon.positions[-1] = a * np.array(carbon_pos_1) 
-
         # Fe(n-q)C(p)Vac(q) q=1, p=2
         carbon_pos_2 = carbon_pos[1]
         base.append('C')
         base.positions[-1] = a * np.array(carbon_pos_2) 
 
-        # Fe(n)C type 2...
-        base_carbon_2.append('C')
-        base_carbon_2.positions[-1] = a * np.array(carbon_pos_2) 
-        write(f'{struct_dir}/POSCAR_{label}_C_2', base_carbon_2, format='vasp')
         write(f'{struct_dir}/POSCAR_{label}', base, format='vasp')
-        write(f'{struct_dir}/POSCAR_{label}_C_1', base_carbon, format='vasp')
         return
 
 
     else:
         print(f'unknown carbon configuration')
-        return
+        sys.exit()
 
