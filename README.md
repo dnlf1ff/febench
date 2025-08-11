@@ -38,11 +38,11 @@ micromamba activate febench
 
 2. install required libraries for mlips
 
-    <details><<summary style="background-color:white;color:green;font-weight:normal;width:220px;">SevenNet</summary>
-    > pip install torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121<br>
-> pip install torch==2.5.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121<br>
-> pip install torch-scatter -f https://data.pyg.org/whl/torch-2.5.1+cu121.html <br>
-> pip install sevenn ase matscipy <br>
+   <details><<summary style="background-color:white;color:green;font-weight:normal;width:220px;">SevenNet</summary>
+    'pip install torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121'<br>
+    > pip install torch==2.5.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121<br>
+    > pip install torch-scatter -f https://data.pyg.org/whl/torch-2.5.1+cu121.html <br>
+    > pip install sevenn ase matscipy <br>
     </details>
 
 3. install package 
