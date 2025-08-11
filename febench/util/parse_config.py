@@ -1,10 +1,17 @@
 import os
+import warnings
+from febench.util.parse_calc_config import check_calc_config
+from febench.util.parse_args import parse_base_args
 
-def check_calc_config(config):
-    config_calc = config['calculator']
-    assert config_calc['calc_type'].lower() in ['sevennet', 'sevennet-batch', 'custom']
-    assert isinstance(config_calc['path'], str)
-    assert os.path.isfile(potential := f'{config_calc["path"]}/{config_calc["prefix"]}.{config_calc["extension"]}'), f'MLIP potential not found at {potential}'
+
+def overwrite_default(config, argv: list[str] | None=None):
+    args = parse_base_args(argv)
+    config['prefix'] =args.prefix
+    config['calculator']['calc_type'] =args.calc_type
+    config['calculator']['modal'] =args.modal
+    config['calculator']['model'] =args.model
+    config['calculator']['dirname'] =args.dirname
+    return config
 
 
 def check_data_config(config):
@@ -23,18 +30,25 @@ def check_carbon_config(config):
     os.makedirs(f"{config_carbon['save']}/log", exist_ok = True)
 
 def check_tm_config(config):
-    config_SnV = config['tm']
-    os.makedirs(config_SnV['save'], exist_ok = True)
-    os.makedirs(f"{config_SnV['save']}/structure", exist_ok = True)
-    os.makedirs(f"{config_SnV['save']}/log", exist_ok = True)
+    config_tm = config['tm']
+    os.makedirs(config_tm['save'], exist_ok = True)
+    os.makedirs(f"{config_tm['save']}/structure", exist_ok = True)
+    os.makedirs(f"{config_tm['save']}/log", exist_ok = True)
+
+def check_pair_config(config):
+    config_pair = config['pair']
+    os.makedirs(config_pair['save'], exist_ok = True)
+    os.makedirs(f"{config_pair['save']}/structure", exist_ok = True)
+    os.makedirs(f"{config_pair['save']}/log", exist_ok = True)
+
+def check_triplet_config(config):
+    config_triplet = config['triplet']
+    os.makedirs(config_triplet['save'], exist_ok = True)
+    os.makedirs(f"{config_triplet['save']}/structure", exist_ok = True)
+    os.makedirs(f"{config_triplet['save']}/log", exist_ok = True)
 
 def update_config_dirs(config):
-    prefix = config['calculator']['prefix']
-
-    if config['calculator'].get('modal', None) in ['mpa', 'omat24']: # for now
-        config['calculator']['calc_args']['modal'] = config['calculator']['modal']
-        prefix = f"{config['calculator']['prefix']}/{config['calculator']['modal']}"
-
+    prefix = config['prefix']
     config['data']['cwd'] = (cwd := f"./mlip/{prefix}")
 
     os.makedirs(cwd, exist_ok=True)
@@ -51,14 +65,24 @@ def update_config_dirs(config):
             config[task]['save'] = f"{cwd}/{save_path}"
     return config
 
-def parse_config_yaml(config):
+def parse_config_yaml(config, argv: list[str] | None=None):
+    config = overwrite_default(config, argv)
+    config = check_calc_config(config)
     config = update_config_dirs(config)
 
     check_data_config(config)
-    check_calc_config(config)
-    check_pure_config(config)
-    check_carbon_config(config)
-    check_tm_config(config)
+    config = check_calc_config(config)
+
+    if config['pureFe']['run']:
+        check_pure_config(config)
+    if config['carbon']['run']:
+        check_carbon_config(config)
+    if config['tm']['run']:
+        check_tm_config(config)
+    if config['pair']['run']:
+        check_pair_config(config)
+    if config['triplet']['run']:
+        check_triplet_config(config)
 
     config['root'] = os.path.abspath(os.getcwd()) # short stopper
     config['cwd'] = os.path.join(os.path.abspath(os.getcwd()), config['data']['cwd'])

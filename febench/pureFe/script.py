@@ -5,6 +5,7 @@ import os, sys, gc
 import numpy as np
 import pandas as pd
 from contextlib import redirect_stdout, redirect_stderr
+from tqdm import tqdm
 
 from febench.util.relax import aar_from_config
 from febench.util.utils import dumpYAML
@@ -13,7 +14,6 @@ from febench.util.parse_config import parse_config_yaml
 
 from febench.pureFe.utils import write_fe_base, get_slab, get_Cij, get_elastic_constants, write_csv,EvAToJm
 
-from matscipy.elasticity import fit_elastic_constants
 
 def process_bulk(config, calc):
     save_dir = config["pureFe"]["save"]
@@ -31,55 +31,56 @@ def process_bulk(config, calc):
     atoms.calc = None
 
     write_csv(csv_file, atoms, idx='bulk-pre')
-
-    print('running bulk relaxation')
-
-    atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
-    atoms = ase_atom_relaxer.update_atoms(atoms)
-    atoms.info['conv'] = conv
-    atoms.calc = None
+    input_list = [atoms]
+    for idx, atoms in enumerate(tqdm(input_list, desc = 'relaxing bulk structure ...')):
+        atoms.calc = calc
+        atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
+        atoms = ase_atom_relaxer.update_atoms(atoms)
+        atoms.info['conv'] = conv
+        atoms.calc = None
     
-    write(f"{struct_dir}/bulk_opt.extxyz", atoms, format='extxyz')
-    write(f"{struct_dir}/CONTCAR_bulk", atoms, format='vasp')
-    write_csv(csv_file, atoms, idx='bulk-post')
+        write(f"{struct_dir}/bulk_opt.extxyz", atoms, format='extxyz')
+        write(f"{struct_dir}/CONTCAR_bulk", atoms, format='vasp')
+        write_csv(csv_file, atoms, idx='bulk-post')
 
-    a0 = atoms.info['a']/config['pureFe']['bulk']['supercell'][0]
-    write_fe_base(config, a0)
+        a0 = atoms.info['a']/config['pureFe']['bulk']['supercell'][0]
+        write_fe_base(config, a0)
 
-    print('relaxation for 4 by 4 by 4 cell -- done')
-    csv_file.close()
+        csv_file.close()
 
-    del input_atoms, atoms, csv_file
-    gc.collect()
+        del input_atoms, atoms, csv_file
+        gc.collect()
 
 def process_vacancy(config, calc):
     save_dir = config["pureFe"]["save"]
     log_dir = f'{config["pureFe"]["save"]}/log'
     struct_dir = f'{config["pureFe"]["save"]}/structure'
 
-    print('running pure Iron sturcture with a vacancy')
     csv_file = open(f'{save_dir}/bulk.csv', 'a', buffering=1)
 
     atoms=read(f'{struct_dir}/CONTCAR_bulk', **config["data"]["load_args"])
-    ase_atom_relaxer = aar_from_config(config, calc, opt=config["pureFe"]["vacancy"]["opt"], logfile=f'{log_dir}/vacancy_relax.log')
+    ase_atom_relaxer = aar_from_config(config, calc, opt=config["pureFe"]["vacancy"]["opt"], logfile=f'{log_dir}/Vac_relax.log')
 
     del atoms[0]
     atoms = ase_atom_relaxer.update_atoms(atoms)
     atoms.calc = None
-    write(f"{struct_dir}/POSCAR_vac", atoms, format='vasp')
+    write(f"{struct_dir}/POSCAR_Vac", atoms, format='vasp')
     write_csv(csv_file, atoms, idx='vac-pre')
 
-    atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
-    atoms = ase_atom_relaxer.update_atoms(atoms)
-    atoms.calc = None
-    atoms.info['conv'] = conv
-    write(f"{struct_dir}/vac_opt.extxyz", atoms, format='extxyz')
-    write(f"{struct_dir}/CONTCAR_vac", atoms, format='vasp')
-    write_csv(csv_file, atoms, idx='vac-post')
-    csv_file.close()
+    input_list = [atoms]
+    for idx, atoms in enumerate(tqdm(input_list, desc = 'relaxing sturcture with one vacancy ...')):
+        atoms.calc = calc
+        atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
+        atoms = ase_atom_relaxer.update_atoms(atoms)
+        atoms.calc = None
+        atoms.info['conv'] = conv
+        write(f"{struct_dir}/Vac_opt.extxyz", atoms, format='extxyz')
+        write(f"{struct_dir}/CONTCAR_Vac", atoms, format='vasp')
+        write_csv(csv_file, atoms, idx='vac-post')
+        csv_file.close()
 
-    del atoms, csv_file
-    gc.collect()
+        del atoms, csv_file
+        gc.collect()
 
 def process_surfaces(config, calc):
     save_dir = config["pureFe"]["save"]
@@ -90,8 +91,8 @@ def process_surfaces(config, calc):
 
     df = pd.read_csv(f"{save_dir}/bulk.csv")
     a0 = df['a'][1]/config['pureFe']['bulk']['supercell'][0]
-
-    for hkl in config["pureFe"]["surface"]["hkl"]:
+ 
+    for idx, hkl in enumerate(tqdm(config["pureFe"]["surface"]["hkl"], desc ='relaxing surfaces ...')):
         ase_atom_relaxer = aar_from_config(config, calc, opt=config["pureFe"]["surface"]["opt"], logfile=f'{log_dir}/surface_{hkl}.log')
         slab=get_slab(hkl, a0=a0)
 
@@ -100,6 +101,7 @@ def process_surfaces(config, calc):
         write(f"{struct_dir}/POSCAR_surface_{hkl}", slab, format='vasp')
         write_csv(csv_file, slab, idx=f'{hkl}-pre')
 
+        slab.calc = calc
         slab, conv = ase_atom_relaxer.relax_atoms(slab)
         slab = ase_atom_relaxer.update_atoms(slab)
         slab.calc = None
@@ -110,12 +112,12 @@ def process_surfaces(config, calc):
 
         del slab, ase_atom_relaxer
         gc.collect()
-        print(f'surface energy for {hkl} -- done')
     csv_file.close()
     del csv_file
     gc.collect()
 
 def process_stiffness(config, calc):
+    from matscipy.elasticity import fit_elastic_constants
     save_dir = config["pureFe"]["save"]
     log_dir = f'{config["pureFe"]["save"]}/log'
     struct_dir = f'{config["pureFe"]["save"]}/structure'
@@ -139,8 +141,8 @@ def post_process(config):
     a = df.loc['bulk-post']['a']/config['pureFe']['bulk']['supercell'][0]
     E_bulk = df.loc['bulk-post']['energy']
     n_bulk = df.loc['bulk-post']['natom']
-    E_vac = df.loc['vac-post']['energy']
-    E_vac_f = E_vac - (n_bulk - 1) * E_bulk / n_bulk
+    E_Vac = df.loc['vac-post']['energy']
+    E_Vac_f = E_Vac - (n_bulk - 1) * E_bulk / n_bulk
 
     E_100 = df.loc['100-post']['energy']
     A_100 = df.loc['100-post']['surface_area']
@@ -165,7 +167,7 @@ def post_process(config):
     property_keys = ['a0','E_vac_f', 'E_100_f', 'E_110_f', 'E_111_f', 'B', 'C_prime', 'C44']
     df_pureFe = pd.DataFrame(index=property_keys)
 
-    pureFe_props = [a, E_vac_f, E_100_f, E_110_f, E_111_f, B, C_prime, C44]
+    pureFe_props = [a, E_Vac_f, E_100_f, E_110_f, E_111_f, B, C_prime, C44]
     df_pureFe[config['calculator']['prefix']] = pureFe_props
 
     df_pureFe.index.name = 'property'
@@ -177,22 +179,10 @@ def main(argv: list[str] | None=None) -> None:
 
     args = parse_base_args(argv)
     config_dir = args.config
-    calc_type = args.calc_type
-    calc = args.calc
-    modal = args.modal
-    potential_path = args.potential_path
-    potential_ext = args.potential_ext
 
     with open(config_dir, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    config['calculator']['calc_type'] = calc_type
-    config['calculator']['prefix'] = calc
-    config['calculator']['path'] = potential_path
-    config['calculator']['extension'] = potential_ext
-
-    if modal.lower() != 'null':
-        config['calculator']['modal'] = modal
     
     config = parse_config_yaml(config)
     dumpYAML(config, f'{config["cwd"]}/config_pure.yaml')

@@ -10,10 +10,13 @@ from febench.util.parse_config import parse_config_yaml
 
 from febench.util.relax import aar_from_config
 from febench.tm.utils import write_poscar_from_config
-import pandas as pd
 import numpy as np
 import gc
 import torch
+
+from tqdm import tqdm
+import warnings
+
 
 def process_tm(config, calc):
     save_dir = config["tm"]["save"]
@@ -24,23 +27,20 @@ def process_tm(config, calc):
     E_Fe = atoms_bulk.info['e_fr_energy']
     a = atoms_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
 
-    atoms_vac = read(f'{config["pureFe"]["save"]}/structure/vac_opt.extxyz')
-    E_FeVac = atoms_vac.info['e_fr_energy']
+    atoms_Vac = read(f'{config["pureFe"]["save"]}/structure/Vac_opt.extxyz')
+    E_FeVac = atoms_Vac.info['e_fr_energy']
 
-    del atoms_bulk, atoms_vac
+    del atoms_bulk, atoms_Vac
     gc.collect()
 
     csv_file = open(f'{save_dir}/tm.csv', 'w', buffering = 1)
     csv_file.write('solute,E_Fe,E_FeVac,E_FeM,' + ','.join(f'E_FeMM_{i+1}nn' for i in range(5)) + ','.join(f'E_FeMVac_{i+1}nn' for i in range(5))+'\n')
 
-    ss_file = open(f'{save_dir}/ss.csv', 'w', buffering = 1)
-    ss_file.write('solute,' + ','.join(f'E_ss_{i+1}nn' for i in range(5)) + '\n')
-
-    sv_file = open(f'{save_dir}/sv.csv', 'w', buffering = 1)
-    sv_file.write('solute,' + ','.join(f'E_sv_{i+1}nn' for i in range(5)) + '\n')
+    tm_file = open(f'{save_dir}/tm_E_bind.csv', 'w', buffering = 1)
+    tm_file.write('sol_1,sol_2,nn,E_bind\n')
 
     sols = config["tm"]["solute"]
-    for sol in sols:
+    for idx, sol in enumerate(tqdm(sols, desc='processing transition metals ...')):
         write_poscar_from_config(config, sol, a)
 
         # calc Fe(n-1)M
@@ -58,74 +58,69 @@ def process_tm(config, calc):
 
         del  atoms, ase_atom_relaxer
         gc.collect()
-        
-        E_vac = f'' # E_FeMVac_1nn ... E_FeMVac_5nn
-        E_M = f'' # E_FeMM_1nn ... E_FeMM_5nn
 
-        E_ss= f'' # equation 4
-        E_sv = f'' # equation 5
+        E_FeMM = ''
 
         for i in range(5): 
             # calc Fe(n-2)MVac
-            atoms_vac = read(f'{struct_dir}/POSCAR_{sol}_vac_{i+1}nn', format='vasp')
-
-            ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_vac_{i+1}nn.log')
-            atoms_vac, conv = ase_atom_relaxer.relax_atoms(atoms_vac)
-            atoms_vac = ase_atom_relaxer.update_atoms(atoms_vac)
-            atoms_vac.info['conv'] = conv
-            atoms_vac.calc = None
-            write(f'{struct_dir}/CONTCAR_{sol}_vac_{i+1}nn', atoms_vac, format='vasp')
-
-            E_vac += f',{atoms_vac.info["e_fr_energy"]}'
-            E_sv += f',{E_FeVac + E_FeM - E_Fe - atoms_vac.info["e_fr_energy"]}'
-            del  atoms_vac, ase_atom_relaxer
-            gc.collect()
-
             # calc Fe(n-2)M(2)
-            atoms_sol = read(f'{struct_dir}/POSCAR_{sol}_{sol}_{i+1}nn', format='vasp')
+            atoms = read(f'{struct_dir}/POSCAR_{sol}_{sol}_{i+1}nn', format='vasp')
             ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_{sol}_{i+1}nn.log')
-            atoms_sol, conv = ase_atom_relaxer.relax_atoms(atoms_sol)
-            atoms_sol = ase_atom_relaxer.update_atoms(atoms_sol)
-            atoms_sol.info['conv'] = conv
-            atoms_sol.calc = None
-            write(f'{struct_dir}/CONTCAR_{sol}_{sol}_{i+1}nn', atoms_sol, format='vasp')
+            atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
+            atoms = ase_atom_relaxer.update_atoms(atoms)
+            if not conv:
+                warnings.warn(f'{idx+1}th structure, i.e. {i+1}th nn of {sol}-{sol}, did not converge in {config["opt"]["ortho"]["steps"]}steps\n')  
 
-            E_M += f',{atoms_sol.info["e_fr_energy"]}'
-            E_ss += f',{2*E_FeM - E_Fe - atoms_sol.info["e_fr_energy"]}'
-            del  atoms_sol, ase_atom_relaxer
+
+            atoms.info['conv'] = conv
+            atoms.calc = None
+            write(f'{struct_dir}/CONTCAR_{sol}_{sol}_{i+1}nn', atoms, format='vasp')
+
+            E_FeMM += f',{atoms.info["e_fr_energy"]}'
+            E_bind = 2 * E_FeM - E_Fe - atoms.info['e_fr_energy']
+            tm_file.write(f'{sol},{sol},{i+1},{E_bind}\n')
+            del  atoms, ase_atom_relaxer
             gc.collect()
 
-        csv_file.write(f'{sol},{E_Fe},{E_FeVac},{E_FeM}{E_M}{E_vac}\n')
-        sv_file.write(f'{sol}{E_sv}\n')
-        ss_file.write(f'{sol}{E_ss}\n')
+   
+        E_FeMVac =''
+        for i in range(5): 
+            # calc Fe(n-2)MVac
+            atoms = read(f'{struct_dir}/POSCAR_{sol}_Vac_{i+1}nn', format='vasp')
+
+            ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_Vac_{i+1}nn.log')
+            atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
+            atoms = ase_atom_relaxer.update_atoms(atoms)
+            atoms.info['conv'] = conv
+            if not conv:
+                warnings.warn(f'{idx+1}th structure, i.e. {i+1}th nn of {sol}-Vac, did not converge in {config["opt"]["ortho"]["steps"]}steps\n')  
+
+
+
+            atoms.calc = None
+            write(f'{struct_dir}/CONTCAR_{sol}_Vac_{i+1}nn', atoms, format='vasp')
+
+            E_FeMVac += f',{atoms.info["e_fr_energy"]}'
+            E_bind = E_FeVac + E_FeM - E_Fe - atoms.info['e_fr_energy']
+            tm_file.write(f'{sol},Vac,{i+1},{E_bind}\n')
+            del  atoms, ase_atom_relaxer
+            gc.collect()
+
+        csv_file.write(f'{sol},{E_Fe},{E_FeVac},{E_FeM}{E_FeMM}{E_FeMVac}\n')
         torch.cuda.empty_cache()
 
         write(f'{struct_dir}/{sol}_{sol}.extxyz', [read(f'{struct_dir}/CONTCAR_{sol}_{sol}_{i+1}nn') for i in range(5)]) 
-        write(f'{struct_dir}/{sol}_vac.extxyz', [read(f'{struct_dir}/CONTCAR_{sol}_vac_{i+1}nn') for i in range(5)]) 
+        write(f'{struct_dir}/{sol}_Vac.extxyz', [read(f'{struct_dir}/CONTCAR_{sol}_Vac_{i+1}nn') for i in range(5)]) 
     csv_file.close()
-    sv_file.close()
-    ss_file.close()
 
 def main(argv: list[str] | None=None) -> None:
     from febench.util.calc import calc_from_config
     args = parse_base_args(argv)
     config_dir = args.config
-    calc_type = args.calc_type
-    calc = args.calc
-    modal = args.modal
-    potential_path = args.potential_path
-    potential_ext = args.potential_ext
 
     with open(config_dir, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    if modal.lower() != 'null':
-        config['calculator']['modal'] = modal
-    
-    config['calculator']['calc_type'] = calc_type
-    config['calculator']['prefix'] = calc
-    config['calculator']['path'] = potential_path
-    config['calculator']['extension'] = potential_ext
     config = parse_config_yaml(config)
     dumpYAML(config, f'{config["cwd"]}/febench_tm_config.yaml')
     calc = calc_from_config(config)

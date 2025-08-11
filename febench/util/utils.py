@@ -3,9 +3,6 @@ import sys
 
 import yaml
 
-def get_surface_area(atoms):
-    return np.linalg.norm(np.cross(atoms.cell[0], atoms.cell[1]))
-
 def dict_representer(dumper, data=None):
     return dumper.represent_mapping(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data, flow_style=False)
 

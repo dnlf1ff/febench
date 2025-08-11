@@ -7,108 +7,127 @@ data:
     MateiralID: mp-13
     load_args:
         format: vasp
-        index: 0 
+        index: 0
+    cwd: .
 
 calculator:
     calc_type: sevennet
-    path: . 
-    prefix: 'ompa'
+    model: .
+    modal: .
+    prefix: .
+    basedir: .
     calc_args:
-        # modal: omat24 
         device: cuda
 
 pureFe:
     save: ./pureFe
-
+    run: run
     bulk:
         supercell: [4, 4, 4]
         opt: ortho
         run: true
-
     vacancy:
         opt: vc-relax
         run: true
-
     migration:
-        supercell: [3,3,3]
+        supercell: [3, 3, 3]
         run: true
         opt: relax
-
     surface:
         hkl: ['111', '110', '100']
-        supercell: [4,4,20]
+        supercell: [4, 4, 20]
         vacuum: 10
         opt: relax
         run: true
-
-
-    stiffness: 
+    stiffness:
         delta: 0.005
         Nsteps: 4
-        run: true
-
+        run: false
     post:
-        run: true
+        run: false
+
+pair:
+    save: ./pair
+    run: true
+    supercell: [4, 4, 4]
+
+    solute: ['Cu', 'Mn', 'Ni', 'Si']
+    position:
+        base: [1, 0, 0]
+        1nn: [0.5, 0.5, 0.5]
+        2nn: [1, 1, 0]
+        3nn: [0, 0, 1]
+        4nn: [0.5, 1.5, 0.5]
+        5nn: [0, 1, 1]
+    opt: relax
+
+triplet:
+    save: ./triplet
+    label: [112, 113, 115]
+    run: true
+    supercell: [4, 4, 4]
+    solute: ['Cu', 'Mn', 'Ni', 'Si']
+    position:
+        112: [[0, 0, 0], [0.5, 0.5, 0.5], [1, 1, 0]]
+        113: [[0, 0, 0], [0.5, 0.5, 0.5], [1, 1, 1]]
+        115: [[0, 0, 0], [0.5, 0.5, 0.5], [0, 1, 1]]
+    opt: relax
+
+
 carbon:
     save: ./carbon
     run: true
-    supercell: [4,4,4]
+    supercell: [4, 4, 4]
     opt: ortho
     config: ./carbon_config.yaml
-    label: ['a1', 'a2', 'b1', 'b2', 'b3', 'c1', 'c2', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm']
-
+    label: [a1, a2, b1, b2, b3, c1, c2, d, e, f, g, h, i, j, k]
 
 tm:
     save: ./tm
     run: true
-    supercell: [4,4,4]
-    solute: ['Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au']
+    supercell: [4, 4, 4]
+    solute: [Ti, V, Cr, Mn, Fe, Co, Ni, Cu, Zr, Nb, Mo, Tc, Ru, Rh, Pd, Ag, Hf, Ta,
+        W, Re, Os, Ir, Pt, Au]
     position:
         base: [1, 0, 0]
-        1nn : [0.5, 0.5, 0.5]
-        2nn : [1, 1, 0]
-        3nn : [0, 0, 1]
-        4nn : [0.5, 1.5, 0.5]
-        5nn : [0, 1, 1]
+        1nn: [0.5, 0.5, 0.5]
+        2nn: [1, 1, 0]
+        3nn: [0, 0, 1]
+        4nn: [0.5, 1.5, 0.5]
+        5nn: [0, 1, 1]
     opt: ortho
-  
 
 opt:
     vc-relax:
-        fmax: 1.0e-03
+        fmax: 0.0001
         steps: 10000
         optimizer: fire
         cell_filter: unitcell
         mask: [1, 1, 1, 1, 1, 1]
         fix_symm: false
         logfile: ./vc_relax.log
-
     ortho:
-        fmax: 1.0e-03
+        fmax: 0.0001
         steps: 10000
         optimizer: fire
         cell_filter: unitcell
         mask: [1, 1, 1, 0, 0, 0]
         fix_symm: false
         logfile: ./ortho.log
-
-
     relax:
-        fmax: 1.0e-03
+        fmax: 0.0001
         steps: 10000
         optimizer: fire
-        cell_filter: false
-        fix_symm: false 
+        fix_symm: false
         logfile: ./relax.log
     z:
-        fmax: 1.0e-03
+        fmax: 0.001
         steps: 10000
         optimizer: fire
         cell_filter: unitcell
         mask: [0, 0, 1, 0, 0, 0]
         fix_symm: false
-        logfile: z_dir_opt.log
-
+        logfile: ./z_dir_opt.log
     stiffness:
         verbose: true
         delta: 0.005
@@ -116,4 +135,118 @@ opt:
         fmax: 0.0001
         steps: 1000
         graphics: false
+
+carbon_config:
+    # Figure 2 is misprinted. config d, i and f are interchanged
+    # To avoid confusion the script automatically handles this problem
+    # febench.carbon will reproduce Table2
+
+    a1:
+        carbon: [0.5, 0.5, 0]
+        vacancy: [0.5, 0.5, 0.5]
+        n_carbon: 1
+        n_vacancy: 1
+
+    a2:
+        carbon: [1, 0, 0.5]
+        vacancy: [0.5, 0.5, 0.5]
+        n_carbon: 1
+        n_vacancy: 1
+
+
+    b1:
+        carbon: [0.5, 1, 0.5]
+        vacancy: [[0.5, 0.5, 0.5], [0.5, 1.5, 0.5]]
+        n_carbon: 1
+        n_vacancy: 2
+
+
+    b2:
+        carbon: [1, 0.5,0] 
+        vacancy: [[0.5, 0.5, 0.5], [0.5, 1.5, 0.5]]
+        n_carbon: 1
+        n_vacancy: 2
+
+    b3:
+        carbon: [0.5, 0, 0.5] 
+        vacancy: [[0.5, 0.5, 0.5], [0.5, 1.5, 0.5]]
+        n_carbon: 1
+        n_vacancy: 2
+
+
+    c1:
+        carbon: [0.5, 0.5, 1]
+        vacancy: [[0.5, 0.5, 0.5], [1, 0, 0]]
+        n_carbon: 1
+        n_vacancy: 2
+
+
+    c2:
+        carbon: [0.5, 0.5, 0]
+        vacancy: [[0.5, 0.5, 0.5], [1, 0, 0]]
+        n_carbon: 1
+        n_vacancy: 2
+
+    d:
+        carbon: [[1, 0.5, 0], [0, 1.5, 1]]
+        vacancy: []
+        n_carbon: 2
+        n_vacancy: 0
+
+    e:
+        carbon: [[1, 0.5, 0], [0.5, 0.5, 1]]
+        vacancy: []
+        n_carbon: 2
+        n_vacancy: 0
+
+    f:
+        carbon: [[0.5, 0.5, 1], [1, 0, 0.5]]
+        vacancy: []
+        n_carbon: 2
+        n_vacancy: 0
+ 
+    g:
+        carbon: [[1, 0, 0.5], [1, 1, 0.5]]
+        vacancy: []
+        n_carbon: 2
+        n_vacancy: 0
+  
+    h:
+        carbon: [[0.5, 0.5, 1], [0.5, 1, 0.5]]
+        vacancy: []
+        n_carbon: 2
+        n_vacancy: 0
+
+    i:
+        carbon: [[0.5, 0.5, 0], [0.5, 0.5, 1]]
+        vacancy: []
+        n_carbon: 2
+        n_vacancy: 0
+
+    j:
+        carbon: [[0.5, 0.5, 0], [0.5, 0.5, 1]]
+        vacancy: [0.5, 0.5, 0.5]
+        n_carbon: 2
+        n_vacancy: 1
+  
+ 
+    k:
+        carbon: [[0.5, 0.5, 0], [0.5, 0, 0.5]]
+        vacancy: [0.5, 0.5, 0.5]
+        n_carbon: 2
+        n_vacancy: 1
+ 
+ 
+    l:
+        carbon: [[0.5, 0.5, 0.25], [0.5, 0.5, 0.75]]
+        vacancy: [0.5, 0.5, 0.5]
+        n_carbon: 2
+        n_vacancy: 1
+ 
+    m:
+        carbon: [[0.5, 0.75, 0.25], [0.5, 0.25, 0.75]]
+        vacancy: [0.5, 0.5, 0.5]
+        n_carbon: 2
+        n_vacancy: 1
+
 ...

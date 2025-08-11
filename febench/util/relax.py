@@ -4,8 +4,6 @@ from ase.optimize import LBFGS, FIRE, FIRE2
 import numpy as np
 from ase import Atoms
 
-from febench.util.utils import get_surface_area
-
 OPT_DICT = {'fire': FIRE, 'fire2':FIRE2,'lbfgs': LBFGS}
 FILTER_DICT = {'frechet': FrechetCellFilter, 'unitcell': UnitCellFilter}
 
@@ -38,7 +36,10 @@ class AseAtomRelax:
     def update_atoms(self, atoms):
         atoms = atoms.copy()
         atoms.calc = self.calc
-        atoms.info['e_fr_energy'] = atoms.get_potential_energy(force_consistent=True)
+        try:
+            atoms.info['e_fr_energy'] = atoms.get_potential_energy(force_consistent=True)
+        except:
+            atoms.info['e_fr_energy'] = atoms.get_potential_energy()
         atoms.info['e_0_energy'] = atoms.get_potential_energy()
         atoms.info['force'] = atoms.get_forces()
         atoms.info['stress'] = atoms.get_stress()
@@ -52,7 +53,8 @@ class AseAtomRelax:
         atoms.info['alpha'] = atoms.cell.angles()[0]
         atoms.info['beta'] = atoms.cell.angles()[1]
         atoms.info['gamma'] = atoms.cell.angles()[2]
-        atoms.info['surface_area'] = get_surface_area(atoms)
+        atoms.info['surface_area'] = np.linalg.norm(np.cross(atoms.cell[0], atoms.cell[1]))
+
         return atoms
 
     def relax_atoms(self, atoms):
@@ -90,8 +92,6 @@ def aar_from_config(config, calc, opt='full', logfile=None):
         cell_filter = FILTER_DICT[cell_filter.lower()]
         
     except Exception as e:
-        print(f'error {e} occured while finding cell filter')
-        print(f'will proceed with out cell filter')
         cell_filter = None
 
     if logfile is not None:

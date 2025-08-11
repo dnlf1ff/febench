@@ -23,7 +23,7 @@ def find_vac_idx(atoms, a, vac_pos):
     # print(index)
     return int(list(index)[0])
 
-def write_FeC(config, a):
+def write_FeC_poscar(config, a):
     carbon_pos = [0.5, 0.5, 0]
     struct_dir = f'{config["carbon"]["save"]}/structure'
     # Fe(n)
@@ -48,7 +48,6 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
         vac_idx = find_vac_idx(base, a, vac_pos)
         # Fe(n-q)Vac(q)
         del base[vac_idx]
-        write(f'{struct_dir}/POSCAR_{label}_vac', base)
 
         # Fe(n-q)C(p)Vac(q)
         base.append('C')
@@ -58,12 +57,10 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
         return
 
     if n_carbon == 1 and n_vac == 2:
-        # Fe(n-q)Vac(q)
         vac_idx_1 = find_vac_idx(base, a, vac_pos[0])
         del base[vac_idx_1]
         vac_idx_2 = find_vac_idx(base, a, vac_pos[1])
         del base[vac_idx_2]
-        write(f'{struct_dir}/POSCAR_{label}_vac', base)
 
         # Fe(n-q)C(p)Vac(q)
         base.append('C')
@@ -91,7 +88,6 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
         # Fe(n-q)Vac(q)
         vac_idx = find_vac_idx(base, a, vac_pos)
         del base[vac_idx]
-        write(f'{struct_dir}/POSCAR_{label}_vac', base)
 
         carbon_pos_1 = carbon_pos[0]
         base.append('C')
@@ -105,8 +101,6 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
         write(f'{struct_dir}/POSCAR_{label}', base, format='vasp')
         return
 
-
     else:
-        print(f'unknown carbon configuration')
-        sys.exit()
+        raise NotImplementedError
 

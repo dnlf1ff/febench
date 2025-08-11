@@ -42,10 +42,11 @@ def write_poscar_from_config(config, solute, a):
         del base_copy[nn_idx]
 
         # Fe(n-2)MVac
-        write(f'{struct_dir}/POSCAR_{solute}_vac_{int(i+1)}nn', base_copy, format='vasp')
+        write(f'{struct_dir}/POSCAR_{solute}_Vac_{int(i+1)}nn', base_copy, format='vasp')
 
         # Fe(n-2)M(2)
         base_copy.append(solute)
         base_copy.positions[-1] = np.array(nn_pos) * a
         write(f'{struct_dir}/POSCAR_{solute}_{solute}_{int(i+1)}nn', base_copy, format='vasp')
+
 

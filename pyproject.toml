@@ -21,7 +21,6 @@ readme = "README.md"
 requires-python = ">=2.7"
 dependencies = [
     "ase",
-    "matscipy",
     "numpy",
 ]
 
