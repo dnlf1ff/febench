@@ -96,7 +96,7 @@ def process_carbon(config, calc):
             n_FeVac = n_Fe
 
         # equation 3
-        E_bind = E_FeVac + carbon_args["n_carbon"]*E_FeC - carbon_args["n_carbon"]*E_Fe - E_FeCVac
+        E_bind = carbon_args["n_vac"]*E_FeVac + carbon_args["n_carbon"]*E_FeC - (carbon_args["n_carbon"] + carbon_args["n_vac"] - 1)*E_Fe - E_FeCVac
         csv_file.write(f'{label},{E_bind},{E_FeVac},{n_FeVac},{E_FeC},{n_FeC},{E_Fe},{n_Fe},{E_FeCVac},{n_FeCVac},{carbon_args["n_carbon"]},{carbon_args["n_vac"]}\n')
         torch.cuda.empty_cache()
     csv_file.close()
