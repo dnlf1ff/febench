@@ -13,9 +13,11 @@ as an ASE calculator object
 go to febench/util/parse_args.py for default arguments pass
 or febench/main.py for usage on scripts
 
-!! DPA, ORB, UMA requires numpy >= 2.3.0 which conflicts with febench/pureFe/script.process_stiffness <br>
-!! .. which is a rather trivial prob. as our target property is the binding energy b/w solutes and vacancies <br>
-!! Skip the stiffness tensor part .. what matters in febench/pureFe is the relaxation of bulk + vacancy <br>
+<details><summary style="background-color:white;color:green;font-weight:normal;width:220px;">notes</summary>
+    !! DPA, ORB, UMA requires numpy >= 2.3.0 which conflicts with febench/pureFe/script.process_stiffness <br>
+    !! .. which is a rather trivial prob. as our target property is the binding energy b/w solutes and vacancies <br>
+    !! Skip the stiffness tensor part .. what matters in febench/pureFe is the relaxation of bulk + vacancy <br>
+</details>
 
 #### config.yaml
 holds calc. parameters concerning each task
@@ -71,7 +73,7 @@ micromamba activate febench <br>
     </details>
 
 
-3. install package 
+3. install package  <br>
     git clone git@github.com:dnlf1ff/febench.git <br>
     cd ./febench <br>
     pip install .  <br>
