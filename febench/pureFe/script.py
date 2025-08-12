@@ -120,7 +120,6 @@ def process_surfaces(config, calc):
     gc.collect()
 
 def post_process(config):
-    # ugly and explicit .. only for pureFe
     save_dir = config["pureFe"]["save"]
     struct_dir = f'{config["pureFe"]["save"]}/structure'
 
