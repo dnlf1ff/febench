@@ -12,7 +12,7 @@ from febench.util.utils import dumpYAML
 from febench.util.parse_args import parse_base_args
 from febench.util.parse_config import parse_config_yaml
 
-from febench.pureFe.utils import write_fe_base, get_slab, get_Cij, get_elastic_constants, write_csv,EvAToJm
+from febench.pureFe.utils import write_fe_base, get_slab, write_csv, EvAToJm
 
 
 def process_bulk(config, calc):
@@ -23,9 +23,12 @@ def process_bulk(config, calc):
     input_atoms = read(config["data"]["input"], **config["data"]["load_args"])
     atoms = make_supercell(input_atoms, np.diag(config["pureFe"]["bulk"]["supercell"]))
     ase_atom_relaxer = aar_from_config(config, calc, opt=config["pureFe"]["bulk"]["opt"], logfile=f'{log_dir}/bulk_relax.log')
-    
-    csv_file = open(f'{save_dir}/bulk.csv', 'w', buffering=1)
-    csv_file.write('idx,energy,volume,surface_area,natom,a,b,c,alpha,beta,gamma,conv\n')
+   
+    if config['pureFe']['cont']:
+        csv_file = open(f'{save_dir}/bulk.csv', 'a', buffering=1)
+    else:
+        csv_file = open(f'{save_dir}/bulk.csv', 'w', buffering=1)
+        csv_file.write('idx,energy,surface_area,natom,a,b,c,alpha,beta,gamma,conv\n')
 
     atoms = ase_atom_relaxer.update_atoms(atoms)
     atoms.calc = None
@@ -89,15 +92,15 @@ def process_surfaces(config, calc):
 
     csv_file = open(f"{save_dir}/bulk.csv", "a", buffering = 1)
 
-    df = pd.read_csv(f"{save_dir}/bulk.csv")
-    a0 = df['a'][1]/config['pureFe']['bulk']['supercell'][0]
+    atoms = read(f'{struct_dir}/bulk_opt.extxyz', format='extxyz')
+    a0 = atoms.info['a']/config['pureFe']['bulk']['supercell'][0]
  
     for idx, hkl in enumerate(tqdm(config["pureFe"]["surface"]["hkl"], desc ='relaxing surfaces ...')):
         ase_atom_relaxer = aar_from_config(config, calc, opt=config["pureFe"]["surface"]["opt"], logfile=f'{log_dir}/surface_{hkl}.log')
         slab=get_slab(hkl, a0=a0)
-
         slab = ase_atom_relaxer.update_atoms(slab)
         slab.calc = None
+        write(f"{struct_dir}/surface_{hkl}.extxyz", slab, format='extxyz')
         write(f"{struct_dir}/POSCAR_surface_{hkl}", slab, format='vasp')
         write_csv(csv_file, slab, idx=f'{hkl}-pre')
 
@@ -116,62 +119,37 @@ def process_surfaces(config, calc):
     del csv_file
     gc.collect()
 
-def process_stiffness(config, calc):
-    from matscipy.elasticity import fit_elastic_constants
-    save_dir = config["pureFe"]["save"]
-    log_dir = f'{config["pureFe"]["save"]}/log'
-    struct_dir = f'{config["pureFe"]["save"]}/structure'
-
-    atoms = read(f'{struct_dir}/CONTCAR_bulk', format='vasp')
-    atoms.calc = calc
-
-    with open(f'{log_dir}/elastic_stdout.x', 'w') as f, redirect_stdout(f), redirect_stderr(f):
-        C_least_squares, _ = fit_elastic_constants(atoms,optimizer=FIRE, **config['opt']['stiffness'], logfile=f'{log_dir}/elastic.log')
-
-    os.chdir(config['root'])
-
-    tensor_df = get_Cij(C_least_squares)
-    tensor_df.to_csv(f'{save_dir}/Cij.csv', index_label='row-column')
-
 def post_process(config):
     # ugly and explicit .. only for pureFe
     save_dir = config["pureFe"]["save"]
+    struct_dir = f'{config["pureFe"]["save"]}/structure'
 
-    df = pd.read_csv(f'{save_dir}/bulk.csv', index_col='idx')
-    a = df.loc['bulk-post']['a']/config['pureFe']['bulk']['supercell'][0]
-    E_bulk = df.loc['bulk-post']['energy']
-    n_bulk = df.loc['bulk-post']['natom']
-    E_Vac = df.loc['vac-post']['energy']
+    atoms_bulk = read(f'{struct_dir}/bulk_opt.extxyz', format='extxyz')
+    a = atoms_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
+    E_bulk = atoms_bulk.info['e_fr_energy']
+    n_bulk = len(atoms_bulk)
+
+    atoms_Vac = read(f'{struct_dir}/Vac_opt.extxyz', format='extxyz') 
+    E_Vac = atoms_Vac.info['e_fr_energy']
     E_Vac_f = E_Vac - (n_bulk - 1) * E_bulk / n_bulk
 
-    E_100 = df.loc['100-post']['energy']
-    A_100 = df.loc['100-post']['surface_area']
-    E_110 = df.loc['110-post']['energy']
-    A_110 = df.loc['110-post']['surface_area']
-    E_111 = df.loc['111-post']['energy']
-    A_111 = df.loc['111-post']['surface_area']
-    E_ref = E_bulk * 320/128
+    property_vals = [a, E_Vac_f]
 
-    E_100_f = (E_100 - E_ref)/ (2*A_100) * EvAToJm
-    E_110_f = (E_110 - E_ref)/ (2*A_110) * EvAToJm
-    E_111_f = (E_111 - E_ref)/ (2*A_111) * EvAToJm
+    for hkl in config['pureFe']['surface']['hkl']:
+        atoms_hkl = read(f'{struct_dir}/surface_{hkl}_opt.extxyz', format='extxyz')
+        E_hkl = atoms_hkl.info['e_fr_energy']
+        A_hkl = atoms_hkl.info['surface_area']
+        E_ref = E_bulk * 320/128
+        E_hkl_f = (E_hkl - E_ref)/ (2*A_hkl) * EvAToJm
+        property_vals.append(E_hkl_f)
 
-    df_Cij= pd.read_csv(f'{save_dir}/Cij.csv', index_col='row-column')
+    property_keys = ['a0','E_vac_f', 'E_100_f', 'E_110_f', 'E_111_f']
+    df = pd.DataFrame(index=property_keys)
 
-    # B = (C11 + 2*C12)/3
-    # C_prime = (C11-C12)/2
-    B = (df_Cij.loc['i1']['j1'] + 2 * df_Cij.loc['i1']['j2'])/3
-    C_prime = (df_Cij.loc['i1']['j1'] - df_Cij.loc['i1']['j2'])/2
-    C44 = df_Cij.loc['i4']['j4']
+    df[config['prefix']] = property_vals
 
-    property_keys = ['a0','E_vac_f', 'E_100_f', 'E_110_f', 'E_111_f', 'B', 'C_prime', 'C44']
-    df_pureFe = pd.DataFrame(index=property_keys)
-
-    pureFe_props = [a, E_Vac_f, E_100_f, E_110_f, E_111_f, B, C_prime, C44]
-    df_pureFe[config['calculator']['prefix']] = pureFe_props
-
-    df_pureFe.index.name = 'property'
-    df_pureFe.to_csv(f'{save_dir}/pureFe_properties.csv', index_label='property')
+    df.index.name = 'property'
+    df.to_csv(f'{save_dir}/pureFe_properties.csv', index_label='property')
 
 def main(argv: list[str] | None=None) -> None:
     from febench.util.calc import calc_from_config
@@ -196,9 +174,6 @@ def main(argv: list[str] | None=None) -> None:
 
     if config['pureFe']['surface']['run']:
         process_surfaces(config, calc)
-
-    if config['pureFe']['stiffness']['run']:
-        process_stiffness(config, calc)
 
     if config['pureFe']['post']['run']:
         post_process(config)

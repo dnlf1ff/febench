@@ -8,9 +8,6 @@ from febench.util.parse_args import parse_base_args
 from febench.pureFe.script import *
 from febench.carbon.script import process_carbon
 from febench.tm.script import process_tm
-from febench.pair.script import process_pair
-from febench.triplet.script import process_triplet
-
 
 import pandas as pd
 import torch
@@ -41,9 +38,6 @@ def main(argv: list[str] | None=None) -> None:
         if config['pureFe']['surface']['run']:
             process_surfaces(config, calc)
 
-        if config['pureFe']['stiffness']['run']:
-            process_stiffness(config, calc)
-
         if config['pureFe']['post']['run']:
             post_process(config)
 
@@ -52,13 +46,6 @@ def main(argv: list[str] | None=None) -> None:
 
     if config['tm']['run']:
         process_tm(config, calc)
-
-    if config['pair']['run']:
-        process_pair(config, calc)
-
-    if config['triplet']['run']:
-        process_triplet(config, calc)
-    
 
 if __name__ == '__main__':
     main()

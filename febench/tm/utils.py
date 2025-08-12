@@ -1,10 +1,10 @@
 from ase.io import write, read
 import numpy as np
 
-def find_nn_idx(atoms, vac_pos, a):
-    x = vac_pos[0] * a
-    y = vac_pos[1] * a
-    z = vac_pos[2] * a
+def find_nn_idx(atoms, nn_pos, a, config, cont=False):
+    x = nn_pos[0] * a
+    y = nn_pos[1] * a
+    z = nn_pos[2] * a
 
     pos = atoms.positions.copy()
     x_pos = pos[:,0]
@@ -16,7 +16,20 @@ def find_nn_idx(atoms, vac_pos, a):
     z_indices = np.where(z_pos==z)[0]
 
     index = set(x_indices) & set(y_indices) & set(z_indices)
-    return int(list(index)[0])
+    try:
+        atoms_index = int(list(index)[0])
+
+    except:
+        if cont:
+            sys.exit()
+        else:
+            atoms = BodyCenteredCubic(directions=np.diag([1,1,1]), size=(1,1,1),
+                    symbol='Fe', pbc=True, latticeconstant=a)
+            atoms = make_supercell(atoms,np.diag(config['carbon']['supercell']))
+            write(f'{config["carbon"]["save"]}/POSCAR_base',atoms, format='vasp')
+        
+            atoms_index = find_vac_idx(atoms, a, nn_pos, config, cont=True)
+    return atoms_index
 
 def write_poscar_from_config(config, solute, a):
     struct_dir = f'{config["tm"]["save"]}/structure'
@@ -30,7 +43,7 @@ def write_poscar_from_config(config, solute, a):
 
     # Fe(n-1)M
     base = read(f'{config["cwd"]}/POSCAR_base', format='vasp')
-    base_idx = find_nn_idx(base, base_pos, a)
+    base_idx = find_nn_idx(base, base_pos, a, config)
     del base[base_idx]
     base.append(solute)
     base.positions[-1] = np.array(base_pos) * a
@@ -38,7 +51,7 @@ def write_poscar_from_config(config, solute, a):
 
     for i, nn_pos in enumerate([nn1_pos, nn2_pos, nn3_pos, nn4_pos, nn5_pos]):
         base_copy = base.copy()
-        nn_idx = find_nn_idx(base_copy, nn_pos, a)
+        nn_idx = find_nn_idx(base_copy, nn_pos, a, config)
         del base_copy[nn_idx]
 
         # Fe(n-2)MVac

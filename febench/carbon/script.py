@@ -12,6 +12,7 @@ from febench.carbon.utils import write_poscar_from_config, write_FeC_poscar
 import torch
 from tqdm import tqdm
 import warnings
+import os
 
 def process_carbon(config, calc):
     save_dir = config["carbon"]["save"]
@@ -27,22 +28,26 @@ def process_carbon(config, calc):
     E_FeVac = atoms_Vac.info['e_fr_energy']
     n_FeVac = len(atoms_Vac)
 
-    write_FeC_poscar(config, a)
+    carbon_config = config['carbon_config']
     
-    with open(config["carbon"]["config"], 'r') as f:
-        carbon_config = yaml.load(f, Loader=yaml.FullLoader)
+    if config['carbon']['cont']:
+        csv_file = open(f'{save_dir}/carbon.csv', 'a', buffering = 1)
+    else:
+        csv_file = open(f'{save_dir}/carbon.csv', 'w', buffering = 1)
+        csv_file.write('config,E_bind,E_FeVac,n_FeVac,E_FeC,n_FeC,E_Fe,n_Fe,E_FeCVac,n_FeCVac,n_carbon,n_vacancy,conv\n')
 
-    csv_file = open(f'{save_dir}/carbon.csv', 'w', buffering = 1)
-    csv_file.write('config,E_bind,E_FeVac,n_FeVac,E_FeC,n_FeC,E_Fe,n_Fe,E_FeCVac,n_FeCVac,n_carbon,n_vacancy\n')
-
-    atoms_C = read(f'{struct_dir}/POSCAR_C', format='vasp')
-    ase_atom_relaxer = aar_from_config(config, calc,opt=config["carbon"]["opt"], logfile = f'{log_dir}/FeC.log')
-    atoms_C, conv = ase_atom_relaxer.relax_atoms(atoms_C)
-    atoms_C = ase_atom_relaxer.update_atoms(atoms_C)
-    atoms_C.info['conv'] = conv
-    atoms_C.calc = None
-    write(f'{struct_dir}/CONTCAR_C', atoms_C, format='vasp')
-    write(f'{struct_dir}/FeC.extxyz', atoms_C, format='extxyz')
+    if os.path.isfile(f'{struct_dir}/FeC.extxyz'):
+        atoms_C = read(f'{struct_dir}/FeC.extxyz', format='extxyz')
+    else:
+        write_FeC_poscar(config, a)
+        atoms_C = read(f'{struct_dir}/POSCAR_C', format='vasp')
+        ase_atom_relaxer = aar_from_config(config, calc,opt=config["carbon"]["opt"], logfile = f'{log_dir}/FeC_relax.log')
+        atoms_C, conv = ase_atom_relaxer.relax_atoms(atoms_C)
+        atoms_C = ase_atom_relaxer.update_atoms(atoms_C)
+        atoms_C.info['conv'] = conv
+        atoms_C.calc = None
+        write(f'{struct_dir}/CONTCAR_C', atoms_C, format='vasp')
+        write(f'{struct_dir}/FeC.extxyz', atoms_C, format='extxyz')
 
     E_FeC = atoms_C.info['e_fr_energy']
     n_FeC = len(atoms_C)
@@ -63,10 +68,8 @@ def process_carbon(config, calc):
 
         write_poscar_from_config(config, **carbon_args)
 
-        # calc #Fe(n-q)C(p)Vac(q) 
         atoms = read(f'{struct_dir}/POSCAR_{label}', format='vasp')
-
-        ase_atom_relaxer = aar_from_config(config, calc,opt=config["carbon"]["opt"], logfile = f'{log_dir}/{label}_FeCVac.log')
+        ase_atom_relaxer = aar_from_config(config, calc, opt=config["carbon"]["opt"], logfile = f'{log_dir}/{label}_relax.log')
         atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
         atoms = ase_atom_relaxer.update_atoms(atoms)
         atoms.info['conv'] = conv
@@ -79,14 +82,15 @@ def process_carbon(config, calc):
         E_FeCVac = atoms.info['e_fr_energy']
         n_FeCVac = len(atoms)
 
-        del  ase_atom_relaxer, atoms
-        gc.collect()
-
         # equation 3
         n_Vac, n_C = carbon_args["n_vac"], carbon_args["n_carbon"]
         E_bind = n_Vac * E_FeVac + n_C * E_FeC - (n_C + n_Vac - 1) * E_Fe - E_FeCVac
 
-        csv_file.write(f'{label},{E_bind},{E_FeVac},{n_FeVac},{E_FeC},{n_FeC},{E_Fe},{n_Fe},{E_FeCVac},{n_FeCVac},{n_C},{n_Vac}\n')
+        del  ase_atom_relaxer, atoms, carbon_args
+        gc.collect()
+
+ 
+        csv_file.write(f'{label},{E_bind},{E_FeVac},{n_FeVac},{E_FeC},{n_FeC},{E_Fe},{n_Fe},{E_FeCVac},{n_FeCVac},{n_C},{n_Vac},{conv}\n')
 
     torch.cuda.empty_cache()
     csv_file.close()

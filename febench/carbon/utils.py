@@ -2,7 +2,10 @@ from ase.io import write, read
 import numpy as np
 import sys
 
-def find_vac_idx(atoms, a, vac_pos):
+from ase.lattice.cubic import BodyCenteredCubic
+from ase.build import make_supercell
+
+def find_vac_idx(atoms, a, vac_pos, config, cont=False):
     x = vac_pos[0] * a
     y = vac_pos[1] * a
     z = vac_pos[2] * a
@@ -17,11 +20,20 @@ def find_vac_idx(atoms, a, vac_pos):
     z_indices = np.where(z_pos==z)[0]
 
     index = set(x_indices) & set(y_indices) & set(z_indices)
-    # print(x_indices)
-    # print(y_indices)
-    # print(z_indices)
-    # print(index)
-    return int(list(index)[0])
+
+    try:
+        atoms_index = int(list(index)[0])
+    except:
+        if cont:
+            sys.exit()
+        else:
+            atoms = BodyCenteredCubic(directions=np.diag([1,1,1]), size=(1,1,1),
+                    symbol='Fe', pbc=True, latticeconstant=a)
+            atoms = make_supercell(atoms,np.diag(config['carbon']['supercell']))
+            write(f'{config["carbon"]["save"]}/POSCAR_base',atoms, format='vasp')
+        
+            atoms_index = find_vac_idx(atoms, a, vac_pos, config, cont=True)
+    return atoms_index
 
 def write_FeC_poscar(config, a):
     carbon_pos = [0.5, 0.5, 0]
@@ -38,14 +50,11 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
     # Fe(n)C, Fe(n-q)Vac(q), Fe(n-q)C(p)Vac(q)
 
     struct_dir = f'{config["carbon"]["save"]}/structure'
-    # Fe(n)
-    base = read(f'{config["cwd"]}/POSCAR_base', format='vasp')
-
-    # for Fe(n)C
-    base_carbon = base.copy()
+    base_atoms = read(f'{config["cwd"]}/POSCAR_base', format='vasp')
+    base = base_atoms.copy()
 
     if n_carbon == 1 and n_vac == 1:
-        vac_idx = find_vac_idx(base, a, vac_pos)
+        vac_idx = find_vac_idx(base, a, vac_pos, config)
         # Fe(n-q)Vac(q)
         del base[vac_idx]
 
@@ -57,9 +66,9 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
         return
 
     if n_carbon == 1 and n_vac == 2:
-        vac_idx_1 = find_vac_idx(base, a, vac_pos[0])
+        vac_idx_1 = find_vac_idx(base, a, vac_pos[0], config)
         del base[vac_idx_1]
-        vac_idx_2 = find_vac_idx(base, a, vac_pos[1])
+        vac_idx_2 = find_vac_idx(base, a, vac_pos[1], config)
         del base[vac_idx_2]
 
         # Fe(n-q)C(p)Vac(q)
@@ -86,7 +95,7 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
 
     if n_carbon == 2 and n_vac == 1:
         # Fe(n-q)Vac(q)
-        vac_idx = find_vac_idx(base, a, vac_pos)
+        vac_idx = find_vac_idx(base, a, vac_pos, config)
         del base[vac_idx]
 
         carbon_pos_1 = carbon_pos[0]

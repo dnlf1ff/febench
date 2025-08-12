@@ -1,9 +1,10 @@
 ---
+prefix: ompa_omat
+cwd: .
+root: . # absolute path
 
 data:
     input: ./input/Fe.poscar
-    SpaceGroup: BCC
-    SpaceGroupNumber: 229
     MateiralID: mp-13
     load_args:
         format: vasp
@@ -12,75 +13,40 @@ data:
 
 calculator:
     calc_type: sevennet
-    model: .
-    modal: .
-    prefix: .
-    basedir: .
+    model: checkpoint.pth 
+    dirname: .
+    modal: mpa
     calc_args:
         device: cuda
 
 pureFe:
     save: ./pureFe
-    run: run
+    run: true
+    cont: false
     bulk:
         supercell: [4, 4, 4]
-        opt: ortho
+        opt: bulk
         run: true
     vacancy:
-        opt: vc-relax
+        opt: vacancy
         run: true
-    migration:
-        supercell: [3, 3, 3]
-        run: true
-        opt: relax
     surface:
-        hkl: ['111', '110', '100']
+        hkl: ['100', '110', '111']
         supercell: [4, 4, 20]
         vacuum: 10
-        opt: relax
-        run: true
-    stiffness:
-        delta: 0.005
-        Nsteps: 4
+        opt: surface 
         run: false
     post:
         run: false
-
-pair:
-    save: ./pair
-    run: true
-    supercell: [4, 4, 4]
-
-    solute: ['Cu', 'Mn', 'Ni', 'Si']
-    position:
-        base: [1, 0, 0]
-        1nn: [0.5, 0.5, 0.5]
-        2nn: [1, 1, 0]
-        3nn: [0, 0, 1]
-        4nn: [0.5, 1.5, 0.5]
-        5nn: [0, 1, 1]
-    opt: relax
-
-triplet:
-    save: ./triplet
-    label: [112, 113, 115]
-    run: true
-    supercell: [4, 4, 4]
-    solute: ['Cu', 'Mn', 'Ni', 'Si']
-    position:
-        112: [[0, 0, 0], [0.5, 0.5, 0.5], [1, 1, 0]]
-        113: [[0, 0, 0], [0.5, 0.5, 0.5], [1, 1, 1]]
-        115: [[0, 0, 0], [0.5, 0.5, 0.5], [0, 1, 1]]
-    opt: relax
-
 
 carbon:
     save: ./carbon
     run: true
     supercell: [4, 4, 4]
-    opt: ortho
-    config: ./carbon_config.yaml
+    opt: carbon 
+    # config: ./carbon_config.yaml
     label: [a1, a2, b1, b2, b3, c1, c2, d, e, f, g, h, i, j, k]
+    cont: false
 
 tm:
     save: ./tm
@@ -95,46 +61,52 @@ tm:
         3nn: [0, 0, 1]
         4nn: [0.5, 1.5, 0.5]
         5nn: [0, 1, 1]
-    opt: ortho
+    opt: tm 
+    cont: false
 
 opt:
-    vc-relax:
+    vacancy:
         fmax: 0.0001
-        steps: 10000
+        steps: 100000
         optimizer: fire
         cell_filter: unitcell
         mask: [1, 1, 1, 1, 1, 1]
         fix_symm: false
         logfile: ./vc_relax.log
-    ortho:
+
+    bulk:
         fmax: 0.0001
-        steps: 10000
+        steps: 100000
         optimizer: fire
         cell_filter: unitcell
         mask: [1, 1, 1, 0, 0, 0]
         fix_symm: false
         logfile: ./ortho.log
-    relax:
+
+    carbon:
         fmax: 0.0001
-        steps: 10000
+        steps: 100000
+        optimizer: fire
+        cell_filter: unitcell
+        mask: [1, 1, 1, 0, 0, 0]
+        fix_symm: false
+        logfile: ./ortho.log
+
+    tm:
+        fmax: 0.001
+        steps: 100000
+        optimizer: fire
+        cell_filter: unitcell
+        mask: [1, 1, 1, 0, 0, 0]
+        fix_symm: false
+        logfile: ./ortho.log
+
+    surface:
+        fmax: 0.0001
+        steps: 100000
         optimizer: fire
         fix_symm: false
         logfile: ./relax.log
-    z:
-        fmax: 0.001
-        steps: 10000
-        optimizer: fire
-        cell_filter: unitcell
-        mask: [0, 0, 1, 0, 0, 0]
-        fix_symm: false
-        logfile: ./z_dir_opt.log
-    stiffness:
-        verbose: true
-        delta: 0.005
-        N_steps: 4
-        fmax: 0.0001
-        steps: 1000
-        graphics: false
 
 carbon_config:
     # Figure 2 is misprinted. config d, i and f are interchanged

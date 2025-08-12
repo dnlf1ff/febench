@@ -5,20 +5,20 @@ S. E. Restrepo, N. K. Mohandas, M. Sluiter, and A. T. Paxton, Applicability of u
 
 ### Usage
 run the following  command to run the module as a whole <br>
-febench --config ./config.yaml --modal omat24 --calc ompa --potential_path . --potential_ext pth
+febench --config ./config.yaml --cwd ompa_omat --modal omat24 --model checkpoint.pth --calc_type 7net-mf --potential_path $PATH_TO_POTENTIAL --dispersion false --functional PBE <br><br>
 
-this reads the binary file {args.potential_path}/{args.calc}.{args.potential_ext}
-as an ASE calculator object
 
-go to febench/util/parse_args.py for default arguments pass
-or febench/main.py for usage on scripts
+this reads the binary file {args.potential_path}/{args.model} as an ASE calculator object <br>
+set --dispersion to true in order to exclude D3 calc. <br>
 
+for general usage of argument passing, go to febench/util/parse_args.py & febench/util/parse_config.py<br>
+for detailed calculator configurations see febench/util/parse_calc.py for details<br>
 <details><summary style="background-color:white;color:green;font-weight:normal;width:220px;">notes</summary>
-    !! DPA, ORB, UMA requires numpy >= 2.3.0 which conflicts with febench/pureFe/script.process_stiffness <br>
-    !! .. which is a rather trivial prob. as our target property is the binding energy b/w solutes and vacancies <br>
-    !! Skip the stiffness tensor part .. what matters in febench/pureFe is the relaxation of bulk + vacancy <br>
+     DPA, ORB, UMA requires numpy >= 2.3.0 which conflicts with febench/pureFe/script.process_stiffness <br>
+     .. which is a rather trivial prob. as our target property is the binding energy b/w solutes and vacancies <br>
+     Skip the stiffness tensor part .. what matters in febench/pureFe is the relaxation of bulk + vacancy <br>
 </details>
-
+<br>
 #### config.yaml
 holds calc. parameters concerning each task
 primary forcus is to reimplement the aforementioned paper above

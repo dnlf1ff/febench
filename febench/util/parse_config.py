@@ -11,6 +11,8 @@ def overwrite_default(config, argv: list[str] | None=None):
     config['calculator']['modal'] =args.modal
     config['calculator']['model'] =args.model
     config['calculator']['dirname'] =args.dirname
+    config['calculator']['functional'] =args.functional
+    config['calculator']['dispersion'] =args.dispersion
     return config
 
 
@@ -35,29 +37,15 @@ def check_tm_config(config):
     os.makedirs(f"{config_tm['save']}/structure", exist_ok = True)
     os.makedirs(f"{config_tm['save']}/log", exist_ok = True)
 
-def check_pair_config(config):
-    config_pair = config['pair']
-    os.makedirs(config_pair['save'], exist_ok = True)
-    os.makedirs(f"{config_pair['save']}/structure", exist_ok = True)
-    os.makedirs(f"{config_pair['save']}/log", exist_ok = True)
-
-def check_triplet_config(config):
-    config_triplet = config['triplet']
-    os.makedirs(config_triplet['save'], exist_ok = True)
-    os.makedirs(f"{config_triplet['save']}/structure", exist_ok = True)
-    os.makedirs(f"{config_triplet['save']}/log", exist_ok = True)
-
 def update_config_dirs(config):
     prefix = config['prefix']
-    config['data']['cwd'] = (cwd := f"./mlip/{prefix}")
+    config['cwd'] = cwd = f"./mlip/{prefix}"
 
     os.makedirs(cwd, exist_ok=True)
     os.makedirs('output', exist_ok=True)
     tasks = ['pureFe', 'carbon', 'tm']
 
     for opt_type in config['opt'].keys():
-        if opt_type == 'stiffness':
-            continue
         config['opt'][opt_type]['logfile'] = cwd + f"/{config['opt'][opt_type]['logfile']}"
 
     for task in tasks:
@@ -79,13 +67,9 @@ def parse_config_yaml(config, argv: list[str] | None=None):
         check_carbon_config(config)
     if config['tm']['run']:
         check_tm_config(config)
-    if config['pair']['run']:
-        check_pair_config(config)
-    if config['triplet']['run']:
-        check_triplet_config(config)
 
     config['root'] = os.path.abspath(os.getcwd()) # short stopper
-    config['cwd'] = os.path.join(os.path.abspath(os.getcwd()), config['data']['cwd'])
+    config['cwd'] = os.path.join(os.path.abspath(os.getcwd()), config['cwd'])
     config['output'] = os.path.join(config['root'], 'output')
 
     return config

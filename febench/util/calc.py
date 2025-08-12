@@ -25,18 +25,16 @@ def calc_from_config(config):
     calc_config = config['calculator']
     calc_type = calc_config['calc_type'].lower()
 
-    if calc_type in ['sevennet', 'sevennet-mf', '7net', '7net-mf']:
+    if calc_type in ['sevennet-mf', '7net-mf']:
         calc_kwargs = {'model': calc_config['calc_args']['model'],
                    'modal': calc_config['calc_args']['modal'],
-                   'device': calc_config['calc_args']['device']
-                   }
-        if calc_type in ['sevennet-mf', '7net-mf']:
-            return SevenNetCalculator(**calc_kwargs)
+                   'device': calc_config['calc_args']['device']}
+        return SevenNetCalculator(**calc_kwargs)
 
-        else:
-            calc_kwargs.pop('modal', None)
-            return SevenNetCalculator(**calc_kwargs)
-
+    elif calc_type in ['sevennet', '7net']:
+        calc_kwargs = {'model': calc_config['calc_args']['model'],
+                   'device': calc_config['calc_args']['device']}
+        return SevenNetCalculator(**calc_kwargs)
 
     else:
         return calc_from_py(config)

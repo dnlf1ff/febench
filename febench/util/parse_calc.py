@@ -3,6 +3,9 @@ Modified based on Jinmu Yu's code
 """
 
 from types import NotImplementedType
+import warnings
+
+from ase.calculators.mixing import MixedCalculator
 
 DPA_MODELS ={
     # Matbench
@@ -63,10 +66,12 @@ ORB_MODELS = {
     "orb-omat24": "orb_v3_conservative_inf_omat",
     "omat": "orb_v3_conservative_inf_omat",
     "omat24": "orb_v3_conservative_inf_omat",
-    "mpa": "orb_v3_conservative_inf_omat",
-    "mp": "orb_v3_conservative_inf_omat",
+    "mpa": "orb_v3_conservative_inf_mpa",
+    "mp": "orb_v3_conservative_inf_mpa",
     "orb-mpa": "orb_v3_conservative_inf_mpa",
-    "orb-mpa": "orb_v3_conservative_inf_mpa",
+    "orb-mp": "orb_v3_conservative_inf_mpa",
+    "orb_mpa": "orb_v3_conservative_inf_mpa",
+    "orb_mp": "orb_v3_conservative_inf_mpa",
     }
 
 
@@ -83,6 +88,14 @@ UMA_MODALS = {
     'omol': 'omol', # None,  # wB97M-V
     'odac': 'odac', # None,  # PBE-D3
     'omc':  'omc' # None,  # PBE-D3
+    }
+
+UMA_FUNCTIONALS = {
+    'omat': 'PBE',
+    'oc20': 'RPBE',
+    'omol': 'wB97M-V', # None
+    'odac': 'PBE-D3', # None
+    'omc':  'PBE', # 'PBE-D3' # None
     }
   
 # https://www.aissquare.com/models/detail?pageType=models&name=DPA-2.3.1-v3.0.0rc0&id=287#data-used-for-pretraining
@@ -118,7 +131,7 @@ def load_orb_calc(config):
     from orb_models.forcefield.calculator import ORBCalculator
     calc_args = config['calculator']['calc_args']
 
-    orbff = getattr(pretrained, ORB_MODELS[calc_args['modal'].lower()])(
+    orbff = getattr(pretrained, calc_args['model'])(
             precision="float32-highest",
             device=calc_args['device'],
         )
@@ -131,6 +144,8 @@ def load_uma_calc(config):
     from fairchem.core import FAIRChemCalculator
 
     calc_args = config['calculator']['calc_args']
+    modal = UMA_MODALS[calc_args['modal'].lower()]
+
     mlip_unit_kwargs = {
         'inference_model_path': calc_args["model"],
         'device': calc_args['device'],
@@ -140,8 +155,15 @@ def load_uma_calc(config):
         }
 
     mlip_predict_unit = MLIPPredictUnit(**mlip_unit_kwargs)
-    return FAIRChemCalculator(predict_unit=mlip_predict_unit, 
-                              task_name=UMA_MODALS[calc_args['modal'].lower()])
+    calc_uma = FAIRChemCalculator(predict_unit=mlip_predict_unit, task_name=modal)
+    if calc_args['dispersion']:
+        from sevenn.calculator import D3Calculator
+        calc_d3 = D3Calculator(functional_name = calc_args['functional'])
+        calc = MixedCalculator(calc_uma, calc_d3, +1, -1)
+        warnings.warn('Excluding D3 contribution')
+        return calc
+    else:
+        return calc_uma
 
 def load_calc(config):
     calc_type = config['calculator']['calc_type']

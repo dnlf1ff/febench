@@ -33,11 +33,15 @@ def process_tm(config, calc):
     del atoms_bulk, atoms_Vac
     gc.collect()
 
-    csv_file = open(f'{save_dir}/tm.csv', 'w', buffering = 1)
-    csv_file.write('solute,E_Fe,E_FeVac,E_FeM,' + ','.join(f'E_FeMM_{i+1}nn' for i in range(5)) + ','.join(f'E_FeMVac_{i+1}nn' for i in range(5))+'\n')
+    if config['tm']['cont']:
+        csv_file = open(f'{save_dir}/tm.csv', 'a', buffering = 1)
+        tm_file = open(f'{save_dir}/tm_E_bind.csv', 'a', buffering = 1)
+    else:
+        csv_file = open(f'{save_dir}/tm.csv', 'w', buffering = 1)
+        csv_file.write('solute,E_Fe,E_FeVac,E_FeM,FeM_conv,' + ','.join(f'E_FeMM_{i+1}nn' for i in range(5)) + ','.join(f'E_FeMVac_{i+1}nn' for i in range(5))+'\n')
 
-    tm_file = open(f'{save_dir}/tm_E_bind.csv', 'w', buffering = 1)
-    tm_file.write('sol_1,sol_2,nn,E_bind\n')
+        tm_file = open(f'{save_dir}/tm_E_bind.csv', 'w', buffering = 1)
+        tm_file.write('sol_1,sol_2,nn,E_bind,FeMM(Vac)_conv\n')
 
     sols = config["tm"]["solute"]
     for idx, sol in enumerate(tqdm(sols, desc='processing transition metals ...')):
@@ -47,9 +51,9 @@ def process_tm(config, calc):
         atoms = read(f'{struct_dir}/POSCAR_{sol}', format='vasp')
 
         ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_relax.log')
-        atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
+        atoms, FeM_conv = ase_atom_relaxer.relax_atoms(atoms)
         atoms = ase_atom_relaxer.update_atoms(atoms)
-        atoms.info['conv'] = conv
+        atoms.info['conv'] = FeM_conv
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{sol}', atoms, format='vasp')
         write(f'{struct_dir}/{sol}_opt.extxyz', atoms, format='extxyz')
@@ -65,7 +69,7 @@ def process_tm(config, calc):
             # calc Fe(n-2)MVac
             # calc Fe(n-2)M(2)
             atoms = read(f'{struct_dir}/POSCAR_{sol}_{sol}_{i+1}nn', format='vasp')
-            ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_{sol}_{i+1}nn.log')
+            ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_{sol}_{i+1}nn_relax.log')
             atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
             atoms = ase_atom_relaxer.update_atoms(atoms)
             if not conv:
@@ -78,7 +82,7 @@ def process_tm(config, calc):
 
             E_FeMM += f',{atoms.info["e_fr_energy"]}'
             E_bind = 2 * E_FeM - E_Fe - atoms.info['e_fr_energy']
-            tm_file.write(f'{sol},{sol},{i+1},{E_bind}\n')
+            tm_file.write(f'{sol},{sol},{i+1},{E_bind},{conv}\n')
             del  atoms, ase_atom_relaxer
             gc.collect()
 
@@ -88,25 +92,23 @@ def process_tm(config, calc):
             # calc Fe(n-2)MVac
             atoms = read(f'{struct_dir}/POSCAR_{sol}_Vac_{i+1}nn', format='vasp')
 
-            ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_Vac_{i+1}nn.log')
+            ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_Vac_{i+1}nn_relax.log')
             atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
             atoms = ase_atom_relaxer.update_atoms(atoms)
             atoms.info['conv'] = conv
+
             if not conv:
                 warnings.warn(f'{idx+1}th structure, i.e. {i+1}th nn of {sol}-Vac, did not converge in {config["opt"]["ortho"]["steps"]}steps\n')  
-
-
-
             atoms.calc = None
             write(f'{struct_dir}/CONTCAR_{sol}_Vac_{i+1}nn', atoms, format='vasp')
 
             E_FeMVac += f',{atoms.info["e_fr_energy"]}'
             E_bind = E_FeVac + E_FeM - E_Fe - atoms.info['e_fr_energy']
-            tm_file.write(f'{sol},Vac,{i+1},{E_bind}\n')
+            tm_file.write(f'{sol},Vac,{i+1},{E_bind},{conv}\n')
             del  atoms, ase_atom_relaxer
             gc.collect()
 
-        csv_file.write(f'{sol},{E_Fe},{E_FeVac},{E_FeM}{E_FeMM}{E_FeMVac}\n')
+        csv_file.write(f'{sol},{E_Fe},{E_FeVac},{E_FeM},{conv}{E_FeMM}{E_FeMVac}\n')
         torch.cuda.empty_cache()
 
         write(f'{struct_dir}/{sol}_{sol}.extxyz', [read(f'{struct_dir}/CONTCAR_{sol}_{sol}_{i+1}nn') for i in range(5)]) 

@@ -22,5 +22,12 @@ def parse_base_args(argv: list[str]| None=None): #TODO namespace
     parser.add_argument('--modal','--task', '--head','--task_name', dest='modal', type=str, 
                         default='omat24',help='data modality for multi-functional U-MLIPs; mpa, omat24 etc.')
 
+    parser.add_argument('--dispersion', type=bool, 
+                        default=False, help='whether to exclude D3')
+
+    parser.add_argument('--functional', type=str, 
+                        default='PBE', help='Functional')
+
+
     return parser.parse_args(argv)
 
