@@ -1,3 +1,5 @@
+#### Use this
+
 ### Description
 python package for reproducing the following paper: 
 
@@ -18,12 +20,14 @@ for detailed calculator configurations see febench/util/parse_calc.py for detail
      .. which is a rather trivial prob. as our target property is the binding energy b/w solutes and vacancies <br>
      Skip the stiffness tensor part .. what matters in febench/pureFe is the relaxation of bulk + vacancy <br>
 </details>
+
 <br>
-#### config.yaml
+
+#### config.yaml  
 holds calc. parameters concerning each task
 primary forcus is to reimplement the aforementioned paper above
 
-#### other command lines
+#### other command lines 
 febench (same with febench-run)
 
 febench-pure to only run pure iron calc.
@@ -74,6 +78,6 @@ micromamba activate febench <br>
 
 
 3. install package  <br>
-    git clone git@github.com:dnlf1ff/febench.git <br>
+    git clone --branch dev git@github.com:dnlf1ff/febench.git <br>
     cd ./febench <br>
     pip install .  <br>
