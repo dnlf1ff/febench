@@ -18,7 +18,7 @@ def process_carbon(config, calc):
     save_dir = config["carbon"]["save"]
     struct_dir = f'{config["carbon"]["save"]}/structure'
     log_dir = f'{config["carbon"]["save"]}/log'
-    
+
     atoms_bulk = read(f'{config["pureFe"]["save"]}/structure/bulk_opt.extxyz')
     a = atoms_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
     E_Fe = atoms_bulk.info['e_fr_energy']
@@ -29,7 +29,7 @@ def process_carbon(config, calc):
     n_FeVac = len(atoms_Vac)
 
     carbon_config = config['carbon_config']
-    
+
     if config['carbon']['cont']:
         csv_file = open(f'{save_dir}/carbon.csv', 'a', buffering = 1)
     else:
@@ -48,11 +48,12 @@ def process_carbon(config, calc):
         atoms_C.calc = None
         write(f'{struct_dir}/CONTCAR_C', atoms_C, format='vasp')
         write(f'{struct_dir}/FeC.extxyz', atoms_C, format='extxyz')
+        del ase_atom_relaxer
 
     E_FeC = atoms_C.info['e_fr_energy']
     n_FeC = len(atoms_C)
 
-    del atoms_bulk, atoms_Vac, atoms_C, ase_atom_relaxer
+    del atoms_bulk, atoms_Vac, atoms_C
     gc.collect()
 
     labels = config["carbon"]["label"]
