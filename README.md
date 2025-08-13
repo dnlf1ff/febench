@@ -1,4 +1,6 @@
-#### Branch for quick sanity test on MacOS (w/o cuda)
+#### Branch with additional metrics on calculating the Mn, Ni, Cu, Si and vacancy triplet clusters in bcc Fe
+[1]T.M. Whiting, P.A. Burr, D.J.M. King, M.R. Wenman, Understanding the importance of the energetics of Mn, Ni, Cu, Si and vacancy triplet clusters in bcc Fe, J. Appl. Phys. 126 (2019) 115901. https://doi.org/10.1063/1.5109483.
+
 
 ### Description
 python package for reproducing the following paper: 
