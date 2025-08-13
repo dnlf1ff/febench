@@ -48,11 +48,12 @@ def process_carbon(config, calc):
         atoms_C.calc = None
         write(f'{struct_dir}/CONTCAR_C', atoms_C, format='vasp')
         write(f'{struct_dir}/FeC.extxyz', atoms_C, format='extxyz')
+        del ase_atom_relaxer
 
     E_FeC = atoms_C.info['e_fr_energy']
     n_FeC = len(atoms_C)
 
-    del atoms_bulk, atoms_Vac, atoms_C, ase_atom_relaxer
+    del atoms_bulk, atoms_Vac, atoms_C
     gc.collect()
 
     labels = config["carbon"]["label"]
