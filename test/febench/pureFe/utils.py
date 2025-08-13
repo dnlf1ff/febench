@@ -1,11 +1,21 @@
 from ase.build import bcc100, bcc110, bcc111, bulk, make_supercell
+from ase.constraints import FixAtoms
 import numpy as np
 import sys
 
 from ase.units import GPa
 
 from febench.pureFe.matscipy_metrics import *
+
 import pandas as pd
+
+def constrain_slab(slab):
+    z = slab.positions[:,2].copy()
+    index = [atom.index for atom in slab if atom.position[2] < np.percentile(z,62) and atom.position[2]>np.percentile(z,38)]
+    fix_atom = FixAtoms(indices=index)
+    slab.set_constraint(fix_atom)
+    return slab
+
 
 def get_slab(hkl, a0, vacuum=10, size=(4,4,20)):
     if hkl=='100':
@@ -51,7 +61,7 @@ def get_elastic_constants(C_least_squares):
     except:
         df['shear_reuss']=np.nan
         df['shear_vrh']=np.nan
-    return df
+    return df 
 
 def write_csv(file, atoms, idx='pre', delimiter=','):
     try:

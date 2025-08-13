@@ -12,7 +12,7 @@ from febench.util.utils import dumpYAML
 from febench.util.parse_args import parse_base_args
 from febench.util.parse_config import parse_config_yaml
 
-from febench.pureFe.utils import write_fe_base, get_slab, write_csv, EvAToJm
+from febench.pureFe.utils import write_fe_base, get_slab, write_csv, EvAToJm, get_Cij, get_elastic_constants
 
 
 def process_bulk(config, calc):
@@ -119,6 +119,22 @@ def process_surfaces(config, calc):
     del csv_file
     gc.collect()
 
+
+def process_elastic_constants(config, calc):
+    save_dir = config["pureFe"]["save"]
+    log_dir = f'{config["pureFe"]["save"]}/log'
+    struct_dir = f'{config["pureFe"]["save"]}/structure'
+
+    atoms = read(f'{struct_dir}/CONTCAR_bulk', format='vasp')
+    atoms.calc = calc
+
+    with open(f'{log_dir}/elastic_constants.x', 'w') as f, redirect_stdout(f), redirect_stderr(f):
+        C_least_squares, _ = fit_elastic_constants(atoms, optimizer=FIRE, **config['opt']['elastic'], logfile=f'{log_dir}/elastic.log')
+
+        os.chdir(config['root'])
+        tensor_df = get_Cij(C_least_squares)
+        tensor_df.to_csv(f'{save_dir}/elastic_constants.csv', index_label='row-column')
+
 def post_process(config):
     save_dir = config["pureFe"]["save"]
     struct_dir = f'{config["pureFe"]["save"]}/structure'
@@ -160,11 +176,11 @@ def main(argv: list[str] | None=None) -> None:
     with open(config_dir, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    
+
     config = parse_config_yaml(config)
     dumpYAML(config, f'{config["cwd"]}/config_pure.yaml')
     calc = calc_from_config(config)
-    
+
     if config['pureFe']['bulk']['run']:
         process_bulk(config, calc)
 

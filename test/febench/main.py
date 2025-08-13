@@ -9,18 +9,22 @@ from febench.pureFe.script import *
 from febench.carbon.script import process_carbon
 from febench.tm.script import process_tm
 
+
 import pandas as pd
 import torch
 import warnings
 
 def main(argv: list[str] | None=None) -> None:
     args = parse_base_args(argv)
-
-    # config.yaml file to read
-    config_dir = args.config 
+    config_dir = args.config
+    calc = args.calc
+    modal = args.modal
 
     with open(config_dir, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
+   
+    config['calculator']['prefix'] = calc
+    config['calculator']['modal'] = modal
 
     config = parse_config_yaml(config)
     dumpYAML(config, f'{config["cwd"]}/config.yaml')
@@ -28,27 +32,24 @@ def main(argv: list[str] | None=None) -> None:
     calc = calc_from_config(config)
 
     print('processing calculations for pure Iron ...')
-    if config['pureFe']['run']:
-        if config['pureFe']['bulk']['run']:
-            process_bulk(config, calc)
+    if config['pureFe']['bulk']['run']:
+        process_bulk(config, calc)
 
-        if config['pureFe']['vacancy']['run']:
-            process_vacancy(config, calc)
+    if config['pureFe']['vacancy']['run']:
+        process_vacancy(config, calc)
 
-        if config['pureFe']['surface']['run']:
-            process_surfaces(config, calc)
+    if config['pureFe']['surface']:
+        process_surfaces(config, calc)
 
-        if config['pureFe']['post']['run']:
-            post_process(config)
-
-        if config['pureFe']['elastic']['run']:
-            process_elastic(config, calc)
+    if config['pureFe']['stiffness']['run']:
+        process_stiffness(config, calc)
 
     if config['carbon']['run']:
         process_carbon(config, calc)
 
     if config['tm']['run']:
         process_tm(config, calc)
+    
 
 if __name__ == '__main__':
     main()

@@ -1,0 +1,109 @@
+---
+
+data:
+    input: ./input/Fe.poscar
+    SpaceGroup: BCC
+    SpaceGroupNumber: 229
+    MateiralID: mp-13
+    load_args:
+        format: vasp
+        index: 0 
+
+calculator:
+    calc_type: sevennet
+    path: /data2/jinvk/MLP
+    prefix: 'ompa'
+    calc_args:
+        modal: omat24 
+        device: cuda
+
+pureFe:
+    save: ./pureFe
+
+    bulk:
+        supercell: [4, 4, 4]
+        opt: ortho
+        run: true
+
+    vacancy:
+        opt: vc-relax
+        run: true
+
+    surface:
+        hkl: ['111', '110', '100']
+        supercell: [4,4,20]
+        vacuum: 10
+        opt: relax
+        run: true
+
+    stiffness: 
+        delta: 0.005
+        Nsteps: 4
+        run: true
+
+carbon:
+    save: ./carbon
+    supercell: [4,4,4]
+    opt: orth
+    config: ./carbon_config.yaml
+    label: ['a1', 'a2', 'b1', 'b2', 'b3', 'c1', 'c2', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm']
+
+
+tm:
+    save: ./tm
+    supercell: [4,4,4]
+    solute: ['Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au']
+    position:
+       base: [1, 0, 0]
+       1nn : [1/2, 1/2, 1/2]
+       2nn : [1, 1, 0]
+       3nn : [0, 0, 1]
+       4nn : [1/2, 3/2, 1/2]
+       5nn : [0, 1, 1]
+  opt: orth
+  
+
+opt:
+    vc-relax:
+        fmax: 1.0e-03
+        steps: 10000
+        optimizer: fire
+        cell_filter: unitcell
+        mask: [1, 1, 1, 1, 1, 1]
+        fix_symm: false
+        logfile: ./vc_relax.log
+
+    ortho:
+        fmax: 1.0e-03
+        steps: 10000
+        optimizer: fire
+        cell_filter: unitcell
+        mask: [1, 1, 1, 0, 0, 0]
+        fix_symm: false
+        logfile: ./ortho.log
+
+
+    relax:
+        fmax: 1.0e-03
+        steps: 10000
+        optimizer: fire
+        cell_filter: false
+        fix_symm: false 
+        logfile: ./relax.log
+    z:
+        fmax: 1.0e-03
+        steps: 10000
+        optimizer: fire
+        cell_filter: unitcell
+        mask: [0, 0, 1, 0, 0, 0]
+        fix_symm: false
+        logfile: z_dir_opt.log
+
+    stiffness:
+        verbose: true
+        delta: 0.005
+        N_steps: 4
+        fmax: 0.0001
+        steps: 1000
+        graphics: false
+...
