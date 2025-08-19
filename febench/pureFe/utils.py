@@ -13,7 +13,7 @@ def write_fe_base(config, a):
     atoms = make_supercell(fe_unit, np.diag(config["carbon"]["supercell"]))
     write(f'{config["cwd"]}/POSCAR_base', atoms, format='vasp')
 
-def get_slab(hkl, a0, vacuum=20, size=(4,4,20)):
+def get_slab(hkl, a0, vacuum=10, size=(4,4,20)):
     if hkl=='100':
         slab=bcc100('Fe', size=size, a=a0, vacuum=vacuum, orthogonal=True)
     elif hkl=='110':
