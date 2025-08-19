@@ -1,6 +1,0 @@
-[console_scripts]
-febench = febench.main:main
-febench-carbon = febench.carbon.script:main
-febench-pureFe = febench.pureFe.script:main
-febench-run = febench.main:main
-febench-tm = febench.tm.script:main
