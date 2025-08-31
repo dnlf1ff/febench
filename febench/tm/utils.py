@@ -23,6 +23,7 @@ def find_nn_idx(atoms, nn_pos, a, config, cont=False):
         if cont:
             sys.exit()
         else:
+            from ase.build import BodyCenteredCubic
             atoms = BodyCenteredCubic(directions=np.diag([1,1,1]), size=(1,1,1),
                     symbol='Fe', pbc=True, latticeconstant=a)
             atoms = make_supercell(atoms,np.diag(config['carbon']['supercell']))
