@@ -29,17 +29,22 @@ def main(argv: list[str] | None=None) -> None:
 
     print('processing calculations for pure Iron ...')
     if config['pureFe']['run']:
-        if config['pureFe']['bulk']['run']:
-            process_bulk(config, calc)
+        if config['pureFe']['verbose']:
+            if config['pureFe']['bulk']['run']:
+                process_bulk(config, calc)
 
-        if config['pureFe']['vacancy']['run']:
+            if config['pureFe']['vacancy']['run']:
+                process_vacancy(config, calc)
+
+            if config['pureFe']['surface']['run']:
+                process_surfaces(config, calc)
+
+            if config['pureFe']['post']['run']:
+                post_process(config)
+        else:
+            process_bulk(config,calc)
             process_vacancy(config, calc)
 
-        if config['pureFe']['surface']['run']:
-            process_surfaces(config, calc)
-
-        if config['pureFe']['post']['run']:
-            post_process(config)
 
     if config['carbon']['run']:
         process_carbon(config, calc)

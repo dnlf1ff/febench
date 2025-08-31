@@ -35,11 +35,6 @@ def write_poscar_from_config(config, solute, a):
     struct_dir = f'{config["tm"]["save"]}/structure'
     pos_dict = config['tm']['position']
     base_pos = pos_dict['base']
-    nn1_pos = pos_dict['1nn']
-    nn2_pos = pos_dict['2nn']
-    nn3_pos = pos_dict['3nn']
-    nn4_pos = pos_dict['4nn']
-    nn5_pos = pos_dict['5nn']
 
     # Fe(n-1)M
     base = read(f'{config["cwd"]}/POSCAR_base', format='vasp')
@@ -48,6 +43,13 @@ def write_poscar_from_config(config, solute, a):
     base.append(solute)
     base.positions[-1] = np.array(base_pos) * a
     write(f'{struct_dir}/POSCAR_{solute}', base, format='vasp')
+
+    nn1_pos = pos_dict['1nn']
+    nn2_pos = pos_dict['2nn']
+    nn3_pos = pos_dict['3nn']
+    nn4_pos = pos_dict['4nn']
+    nn5_pos = pos_dict['5nn']
+
 
     for i, nn_pos in enumerate([nn1_pos, nn2_pos, nn3_pos, nn4_pos, nn5_pos]):
         base_copy = base.copy()
@@ -61,5 +63,9 @@ def write_poscar_from_config(config, solute, a):
         base_copy.append(solute)
         base_copy.positions[-1] = np.array(nn_pos) * a
         write(f'{struct_dir}/POSCAR_{solute}_{solute}_{int(i+1)}nn', base_copy, format='vasp')
+
+        if config['tm']['verbose']:
+            if i > 0:
+                continue
 
 

@@ -17,22 +17,55 @@ import torch
 from tqdm import tqdm
 import warnings
 
+def process_target_paper(config, calc):
+    if config['tm']['cont']:
+        tm_file = open(f'{save_dir}/tm_E_bind.csv', 'a', buffering = 1)
+    else:
+        tm_file = open(f'{save_dir}/tm_E_bind.csv', 'w', buffering = 1)
+        tm_file.write('sol_1,sol_2,nn,E_bind,FeMM(Vac)_conv\n')
 
-def process_tm(config, calc):
-    save_dir = config["tm"]["save"]
-    struct_dir = f'{config["tm"]["save"]}/structure'
-    log_dir = f'{config["tm"]["save"]}/log'
+    sols = ['Co', 'Cr', 'Cu', 'Mn', 'Mo', 'Nb', 'Ni', 'Ti', 'V']
 
-    atoms_bulk = read(f'{config["pureFe"]["save"]}/structure/bulk_opt.extxyz')
-    E_Fe = atoms_bulk.info['e_fr_energy']
-    a = atoms_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
+    for idx, sol in enumerate(tqdm(sols, desc='processing transition metals ...')):
+        write_poscar_from_config(config, sol, a)
 
-    atoms_Vac = read(f'{config["pureFe"]["save"]}/structure/Vac_opt.extxyz')
-    E_FeVac = atoms_Vac.info['e_fr_energy']
+        # calc Fe(n-1)M
+        atoms = read(f'{struct_dir}/POSCAR_{sol}', format='vasp')
 
-    del atoms_bulk, atoms_Vac
-    gc.collect()
+        ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_relax.log')
+        atoms, FeM_conv = ase_atom_relaxer.relax_atoms(atoms)
+        atoms = ase_atom_relaxer.update_atoms(atoms)
+        atoms.info['conv'] = FeM_conv
+        atoms.calc = None
+        write(f'{struct_dir}/CONTCAR_{sol}', atoms, format='vasp')
+        write(f'{struct_dir}/{sol}_opt.extxyz', atoms, format='extxyz')
 
+        E_FeM = atoms.info['e_fr_energy']
+
+        del  atoms, ase_atom_relaxer
+        gc.collect()
+
+        atoms = read(f'{struct_dir}/POSCAR_{sol}_{sol}_1nn', format='vasp')
+        ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_{sol}_1nn_relax.log')
+        atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
+        atoms = ase_atom_relaxer.update_atoms(atoms)
+
+        if not conv:
+            warnings.warn(f'1nn of {sol}-{sol}, did not converge in {config["opt"]["ortho"]["steps"]}steps\n')  
+
+        atoms.info['conv'] = conv
+        atoms.calc = None
+        write(f'{struct_dir}/CONTCAR_{sol}_{sol}_1nn', atoms, format='vasp')
+
+        E_FeMM = atoms.info["e_fr_energy"]
+        E_bind = 2 * E_FeM - E_Fe - atoms.info['e_fr_energy']
+        tm_file.write(f'{sol},{sol},1,{E_bind},{conv}\n')
+        del  atoms, ase_atom_relaxer
+        gc.collect()
+
+        torch.cuda.empty_cache()
+
+def process_verbose(config, calc, E_vac):
     if config['tm']['cont']:
         csv_file = open(f'{save_dir}/tm.csv', 'a', buffering = 1)
         tm_file = open(f'{save_dir}/tm_E_bind.csv', 'a', buffering = 1)
@@ -114,6 +147,28 @@ def process_tm(config, calc):
         write(f'{struct_dir}/{sol}_{sol}.extxyz', [read(f'{struct_dir}/CONTCAR_{sol}_{sol}_{i+1}nn') for i in range(5)]) 
         write(f'{struct_dir}/{sol}_Vac.extxyz', [read(f'{struct_dir}/CONTCAR_{sol}_Vac_{i+1}nn') for i in range(5)]) 
     csv_file.close()
+
+def process_tm(config, calc):
+    save_dir = config["tm"]["save"]
+    struct_dir = f'{config["tm"]["save"]}/structure'
+    log_dir = f'{config["tm"]["save"]}/log'
+
+    atoms_bulk = read(f'{config["pureFe"]["save"]}/structure/bulk_opt.extxyz')
+    E_Fe = atoms_bulk.info['e_fr_energy']
+    a = atoms_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
+
+    atoms_Vac = read(f'{config["pureFe"]["save"]}/structure/Vac_opt.extxyz')
+    E_FeVac = atoms_Vac.info['e_fr_energy']
+
+    del atoms_bulk, atoms_Vac
+    gc.collect()
+
+    if config['tm']['verbose']:
+        process_verbose(config, calc, E_vac)
+    else:
+        process_target_paper(config, calc)
+
+
 
 def main(argv: list[str] | None=None) -> None:
     from febench.util.calc import calc_from_config

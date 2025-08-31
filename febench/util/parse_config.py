@@ -39,7 +39,7 @@ def check_tm_config(config):
 
 def update_config_dirs(config):
     prefix = config['prefix']
-    config['cwd'] = cwd = f"./mlip/{prefix}"
+    config['cwd'] = cwd = f"./stage/{prefix}"
 
     os.makedirs(cwd, exist_ok=True)
     os.makedirs('output', exist_ok=True)
