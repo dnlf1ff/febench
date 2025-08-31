@@ -17,14 +17,14 @@ import torch
 from tqdm import tqdm
 import warnings
 
-def process_target_paper(config, calc):
+def process_target_paper(config, calc, E_Fe, a, save_dir, struct_dir, log_dir):
     if config['tm']['cont']:
         tm_file = open(f'{save_dir}/tm_E_bind.csv', 'a', buffering = 1)
     else:
         tm_file = open(f'{save_dir}/tm_E_bind.csv', 'w', buffering = 1)
         tm_file.write('sol_1,sol_2,nn,E_bind,FeMM(Vac)_conv\n')
 
-    sols = ['Co', 'Cr', 'Cu', 'Mn', 'Mo', 'Nb', 'Ni', 'Ti', 'V']
+    sols = config["tm"]["solute"]
 
     for idx, sol in enumerate(tqdm(sols, desc='processing transition metals ...')):
         write_poscar_from_config(config, sol, a)
@@ -65,7 +65,7 @@ def process_target_paper(config, calc):
 
         torch.cuda.empty_cache()
 
-def process_verbose(config, calc, E_vac):
+def process_verbose(config, calc, E_Fe, E_FeVac, a, save_dir, struct_dir, log_dir):
     if config['tm']['cont']:
         csv_file = open(f'{save_dir}/tm.csv', 'a', buffering = 1)
         tm_file = open(f'{save_dir}/tm_E_bind.csv', 'a', buffering = 1)
@@ -153,6 +153,9 @@ def process_tm(config, calc):
     struct_dir = f'{config["tm"]["save"]}/structure'
     log_dir = f'{config["tm"]["save"]}/log'
 
+    dir_args = {'save_dir': save_dir, 'struct_dir': struct_dir,
+                'log_dir': log_dir}
+
     atoms_bulk = read(f'{config["pureFe"]["save"]}/structure/bulk_opt.extxyz')
     E_Fe = atoms_bulk.info['e_fr_energy']
     a = atoms_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
@@ -164,9 +167,9 @@ def process_tm(config, calc):
     gc.collect()
 
     if config['tm']['verbose']:
-        process_verbose(config, calc, E_vac)
+        process_verbose(config, calc, E_Fe, E_FeVac,a, **dir_args)
     else:
-        process_target_paper(config, calc)
+        process_target_paper(config, calc, E_Fe, a, **dir_args)
 
 
 

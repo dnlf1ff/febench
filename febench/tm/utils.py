@@ -1,5 +1,8 @@
 from ase.io import write, read
 import numpy as np
+import sys
+from ase.build import make_supercell
+from ase.lattice.cubic import BodyCenteredCubic
 
 def find_nn_idx(atoms, nn_pos, a, config, cont=False):
     x = nn_pos[0] * a
@@ -28,7 +31,7 @@ def find_nn_idx(atoms, nn_pos, a, config, cont=False):
             atoms = make_supercell(atoms,np.diag(config['carbon']['supercell']))
             write(f'{config["carbon"]["save"]}/POSCAR_base',atoms, format='vasp')
         
-            atoms_index = find_vac_idx(atoms, a, nn_pos, config, cont=True)
+            atoms_index = find_nn_idx(atoms, a, nn_pos, config, cont=True)
     return atoms_index
 
 def write_poscar_from_config(config, solute, a):
@@ -52,6 +55,10 @@ def write_poscar_from_config(config, solute, a):
 
 
     for i, nn_pos in enumerate([nn1_pos, nn2_pos, nn3_pos, nn4_pos, nn5_pos]):
+        if not config['tm']['verbose']:
+            if i > 0:
+                continue
+
         base_copy = base.copy()
         nn_idx = find_nn_idx(base_copy, nn_pos, a, config)
         del base_copy[nn_idx]
@@ -63,9 +70,4 @@ def write_poscar_from_config(config, solute, a):
         base_copy.append(solute)
         base_copy.positions[-1] = np.array(nn_pos) * a
         write(f'{struct_dir}/POSCAR_{solute}_{solute}_{int(i+1)}nn', base_copy, format='vasp')
-
-        if config['tm']['verbose']:
-            if i > 0:
-                continue
-
 

@@ -19,6 +19,7 @@ def process_bulk(config, calc):
     save_dir = config["pureFe"]["save"]
     log_dir = f'{config["pureFe"]["save"]}/log'
     struct_dir = f'{config["pureFe"]["save"]}/structure'
+    csv_file = None
 
     input_atoms = read(config["data"]["input"], **config["data"]["load_args"])
     atoms = make_supercell(input_atoms, np.diag(config["pureFe"]["bulk"]["supercell"]))
@@ -51,7 +52,7 @@ def process_bulk(config, calc):
 
         csv_file.close()
 
-        del input_atoms, atoms, csv_file
+        del atoms, csv_file
         gc.collect()
 
 def process_vacancy(config, calc):

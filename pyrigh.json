@@ -1,0 +1,1214 @@
+{
+    "version": "1.1.403",
+    "time": "1756623077719",
+    "generalDiagnostics": [
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 22,
+                    "character": 19
+                },
+                "end": {
+                    "line": 22,
+                    "character": 23
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 23,
+                    "character": 22
+                },
+                "end": {
+                    "line": 23,
+                    "character": 26
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 27,
+                    "character": 24
+                },
+                "end": {
+                    "line": 27,
+                    "character": 28
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 52,
+                    "character": 20
+                },
+                "end": {
+                    "line": 52,
+                    "character": 24
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/script.py",
+            "severity": "error",
+            "message": "Argument of type \"list[Atoms | List[Atoms]]\" cannot be assigned to parameter \"images\" of type \"Atoms | Sequence[Atoms]\" in function \"write\"",
+            "range": {
+                "start": {
+                    "line": 97,
+                    "character": 44
+                },
+                "end": {
+                    "line": 97,
+                    "character": 103
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/script.py",
+            "severity": "error",
+            "message": "Argument of type \"list[Atoms | List[Atoms]]\" cannot be assigned to parameter \"images\" of type \"Atoms | Sequence[Atoms]\" in function \"write\"",
+            "range": {
+                "start": {
+                    "line": 98,
+                    "character": 40
+                },
+                "end": {
+                    "line": 98,
+                    "character": 98
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Argument of type \"Literal['C']\" cannot be assigned to parameter \"object\" of type \"Atoms\" in function \"append\"\n  \"Literal['C']\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 43,
+                    "character": 16
+                },
+                "end": {
+                    "line": 43,
+                    "character": 19
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"positions\" for class \"List[Atoms]\"\n  Attribute \"positions\" is unknown",
+            "range": {
+                "start": {
+                    "line": 44,
+                    "character": 9
+                },
+                "end": {
+                    "line": 44,
+                    "character": 18
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Argument of type \"Literal['C']\" cannot be assigned to parameter \"object\" of type \"Atoms\" in function \"append\"\n  \"Literal['C']\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 61,
+                    "character": 20
+                },
+                "end": {
+                    "line": 61,
+                    "character": 23
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"positions\" for class \"list[Atoms]\"\n  Attribute \"positions\" is unknown",
+            "range": {
+                "start": {
+                    "line": 62,
+                    "character": 13
+                },
+                "end": {
+                    "line": 62,
+                    "character": 22
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Argument of type \"Literal['C']\" cannot be assigned to parameter \"object\" of type \"Atoms\" in function \"append\"\n  \"Literal['C']\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 74,
+                    "character": 20
+                },
+                "end": {
+                    "line": 74,
+                    "character": 23
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"positions\" for class \"list[Atoms]\"\n  Attribute \"positions\" is unknown",
+            "range": {
+                "start": {
+                    "line": 75,
+                    "character": 13
+                },
+                "end": {
+                    "line": 75,
+                    "character": 22
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Argument of type \"Literal['C']\" cannot be assigned to parameter \"object\" of type \"Atoms\" in function \"append\"\n  \"Literal['C']\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 83,
+                    "character": 20
+                },
+                "end": {
+                    "line": 83,
+                    "character": 23
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"positions\" for class \"list[Atoms]\"\n  Attribute \"positions\" is unknown",
+            "range": {
+                "start": {
+                    "line": 84,
+                    "character": 13
+                },
+                "end": {
+                    "line": 84,
+                    "character": 22
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Argument of type \"Literal['C']\" cannot be assigned to parameter \"object\" of type \"Atoms\" in function \"append\"\n  \"Literal['C']\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 88,
+                    "character": 20
+                },
+                "end": {
+                    "line": 88,
+                    "character": 23
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"positions\" for class \"list[Atoms]\"\n  Attribute \"positions\" is unknown",
+            "range": {
+                "start": {
+                    "line": 89,
+                    "character": 13
+                },
+                "end": {
+                    "line": 89,
+                    "character": 22
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Argument of type \"Literal['C']\" cannot be assigned to parameter \"object\" of type \"Atoms\" in function \"append\"\n  \"Literal['C']\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 101,
+                    "character": 20
+                },
+                "end": {
+                    "line": 101,
+                    "character": 23
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"positions\" for class \"list[Atoms]\"\n  Attribute \"positions\" is unknown",
+            "range": {
+                "start": {
+                    "line": 102,
+                    "character": 13
+                },
+                "end": {
+                    "line": 102,
+                    "character": 22
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Argument of type \"Literal['C']\" cannot be assigned to parameter \"object\" of type \"Atoms\" in function \"append\"\n  \"Literal['C']\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 106,
+                    "character": 20
+                },
+                "end": {
+                    "line": 106,
+                    "character": 23
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/carbon/utils.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"positions\" for class \"list[Atoms]\"\n  Attribute \"positions\" is unknown",
+            "range": {
+                "start": {
+                    "line": 107,
+                    "character": 13
+                },
+                "end": {
+                    "line": 107,
+                    "character": 22
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "\"csv_file\" is possibly unbound",
+            "range": {
+                "start": {
+                    "line": 46,
+                    "character": 18
+                },
+                "end": {
+                    "line": 46,
+                    "character": 26
+                }
+            },
+            "rule": "reportPossiblyUnboundVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "\"csv_file\" is possibly unbound",
+            "range": {
+                "start": {
+                    "line": 51,
+                    "character": 8
+                },
+                "end": {
+                    "line": 51,
+                    "character": 16
+                }
+            },
+            "rule": "reportPossiblyUnboundVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "\"input_atoms\" is possibly unbound",
+            "range": {
+                "start": {
+                    "line": 53,
+                    "character": 12
+                },
+                "end": {
+                    "line": 53,
+                    "character": 23
+                }
+            },
+            "rule": "reportPossiblyUnboundVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "\"csv_file\" is possibly unbound",
+            "range": {
+                "start": {
+                    "line": 53,
+                    "character": 32
+                },
+                "end": {
+                    "line": 53,
+                    "character": 40
+                }
+            },
+            "rule": "reportPossiblyUnboundVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "\"csv_file\" is possibly unbound",
+            "range": {
+                "start": {
+                    "line": 81,
+                    "character": 18
+                },
+                "end": {
+                    "line": 81,
+                    "character": 26
+                }
+            },
+            "rule": "reportPossiblyUnboundVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "\"csv_file\" is possibly unbound",
+            "range": {
+                "start": {
+                    "line": 82,
+                    "character": 8
+                },
+                "end": {
+                    "line": 82,
+                    "character": 16
+                }
+            },
+            "rule": "reportPossiblyUnboundVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "\"csv_file\" is possibly unbound",
+            "range": {
+                "start": {
+                    "line": 84,
+                    "character": 19
+                },
+                "end": {
+                    "line": 84,
+                    "character": 27
+                }
+            },
+            "rule": "reportPossiblyUnboundVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 95,
+                    "character": 15
+                },
+                "end": {
+                    "line": 95,
+                    "character": 19
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 126,
+                    "character": 19
+                },
+                "end": {
+                    "line": 126,
+                    "character": 23
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 127,
+                    "character": 24
+                },
+                "end": {
+                    "line": 127,
+                    "character": 28
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 131,
+                    "character": 22
+                },
+                "end": {
+                    "line": 131,
+                    "character": 26
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 138,
+                    "character": 26
+                },
+                "end": {
+                    "line": 138,
+                    "character": 30
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 139,
+                    "character": 26
+                },
+                "end": {
+                    "line": 139,
+                    "character": 30
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/pureFe/script.py",
+            "severity": "error",
+            "message": "Argument of type \"list[str]\" cannot be assigned to parameter \"index\" of type \"Axes | None\" in function \"__init__\"\n  Type \"list[str]\" is not assignable to type \"Axes | None\"\n    \"list[str]\" is not assignable to \"ExtensionArray\"\n    \"list[str]\" is not assignable to \"ndarray[Unknown, Unknown]\"\n    \"list[str]\" is not assignable to \"Index\"\n    \"list[str]\" is not assignable to \"Series\"\n    \"list[str]\" is incompatible with protocol \"SequenceNotStr[Unknown]\"\n      \"index\" is an incompatible type\n        Type \"(value: str, start: SupportsIndex = 0, stop: SupportsIndex = sys.maxsize, /) -> int\" is not assignable to type \"(value: Any, /, start: int = 0, stop: int = ...) -> int\"\n  ...",
+            "range": {
+                "start": {
+                    "line": 145,
+                    "character": 28
+                },
+                "end": {
+                    "line": 145,
+                    "character": 41
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/script.py",
+            "severity": "error",
+            "message": "\"conv\" is possibly unbound",
+            "range": {
+                "start": {
+                    "line": 143,
+                    "character": 57
+                },
+                "end": {
+                    "line": 143,
+                    "character": 61
+                }
+            },
+            "rule": "reportPossiblyUnboundVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/script.py",
+            "severity": "error",
+            "message": "Argument of type \"list[Atoms | List[Atoms]]\" cannot be assigned to parameter \"images\" of type \"Atoms | Sequence[Atoms]\" in function \"write\"",
+            "range": {
+                "start": {
+                    "line": 146,
+                    "character": 50
+                },
+                "end": {
+                    "line": 146,
+                    "character": 119
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/script.py",
+            "severity": "error",
+            "message": "Argument of type \"list[Atoms | List[Atoms]]\" cannot be assigned to parameter \"images\" of type \"Atoms | Sequence[Atoms]\" in function \"write\"",
+            "range": {
+                "start": {
+                    "line": 147,
+                    "character": 48
+                },
+                "end": {
+                    "line": 147,
+                    "character": 115
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 159,
+                    "character": 22
+                },
+                "end": {
+                    "line": 159,
+                    "character": 26
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 160,
+                    "character": 19
+                },
+                "end": {
+                    "line": 160,
+                    "character": 23
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/script.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 163,
+                    "character": 24
+                },
+                "end": {
+                    "line": 163,
+                    "character": 28
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/utils.py",
+            "severity": "error",
+            "message": "\"sys\" is not defined",
+            "range": {
+                "start": {
+                    "line": 23,
+                    "character": 12
+                },
+                "end": {
+                    "line": 23,
+                    "character": 15
+                }
+            },
+            "rule": "reportUndefinedVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/utils.py",
+            "severity": "error",
+            "message": "\"BodyCenteredCubic\" is not defined",
+            "range": {
+                "start": {
+                    "line": 25,
+                    "character": 20
+                },
+                "end": {
+                    "line": 25,
+                    "character": 37
+                }
+            },
+            "rule": "reportUndefinedVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/utils.py",
+            "severity": "error",
+            "message": "\"make_supercell\" is not defined",
+            "range": {
+                "start": {
+                    "line": 27,
+                    "character": 20
+                },
+                "end": {
+                    "line": 27,
+                    "character": 34
+                }
+            },
+            "rule": "reportUndefinedVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/utils.py",
+            "severity": "error",
+            "message": "\"find_vac_idx\" is not defined",
+            "range": {
+                "start": {
+                    "line": 30,
+                    "character": 26
+                },
+                "end": {
+                    "line": 30,
+                    "character": 38
+                }
+            },
+            "rule": "reportUndefinedVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/utils.py",
+            "severity": "error",
+            "message": "\"atoms_index\" is possibly unbound",
+            "range": {
+                "start": {
+                    "line": 31,
+                    "character": 11
+                },
+                "end": {
+                    "line": 31,
+                    "character": 22
+                }
+            },
+            "rule": "reportPossiblyUnboundVariable"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/utils.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"positions\" for class \"List[Atoms]\"\n  Attribute \"positions\" is unknown",
+            "range": {
+                "start": {
+                    "line": 43,
+                    "character": 9
+                },
+                "end": {
+                    "line": 43,
+                    "character": 18
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/tm/utils.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"positions\" for class \"list[Atoms]\"\n  Attribute \"positions\" is unknown",
+            "range": {
+                "start": {
+                    "line": 63,
+                    "character": 18
+                },
+                "end": {
+                    "line": 63,
+                    "character": 27
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/util/calc.py",
+            "severity": "error",
+            "message": "Argument of type \"ModuleSpec | None\" cannot be assigned to parameter \"spec\" of type \"ModuleSpec\" in function \"module_from_spec\"\n  Type \"ModuleSpec | None\" is not assignable to type \"ModuleSpec\"\n    \"None\" is not assignable to \"ModuleSpec\"",
+            "range": {
+                "start": {
+                    "line": 15,
+                    "character": 45
+                },
+                "end": {
+                    "line": 15,
+                    "character": 49
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/util/calc.py",
+            "severity": "error",
+            "message": "\"loader\" is not a known attribute of \"None\"",
+            "range": {
+                "start": {
+                    "line": 16,
+                    "character": 9
+                },
+                "end": {
+                    "line": 16,
+                    "character": 15
+                }
+            },
+            "rule": "reportOptionalMemberAccess"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/util/calc.py",
+            "severity": "error",
+            "message": "\"exec_module\" is not a known attribute of \"None\"",
+            "range": {
+                "start": {
+                    "line": 16,
+                    "character": 16
+                },
+                "end": {
+                    "line": 16,
+                    "character": 27
+                }
+            },
+            "rule": "reportOptionalMemberAccess"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/util/parse_calc.py",
+            "severity": "error",
+            "message": "Import \"deepmd.calculator\" could not be resolved",
+            "range": {
+                "start": {
+                    "line": 102,
+                    "character": 9
+                },
+                "end": {
+                    "line": 102,
+                    "character": 26
+                }
+            },
+            "rule": "reportMissingImports"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/util/parse_calc.py",
+            "severity": "error",
+            "message": "Import \"orb_models.forcefield\" could not be resolved",
+            "range": {
+                "start": {
+                    "line": 129,
+                    "character": 9
+                },
+                "end": {
+                    "line": 129,
+                    "character": 30
+                }
+            },
+            "rule": "reportMissingImports"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/util/parse_calc.py",
+            "severity": "error",
+            "message": "Import \"orb_models.forcefield.calculator\" could not be resolved",
+            "range": {
+                "start": {
+                    "line": 130,
+                    "character": 9
+                },
+                "end": {
+                    "line": 130,
+                    "character": 41
+                }
+            },
+            "rule": "reportMissingImports"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/util/parse_calc.py",
+            "severity": "error",
+            "message": "Import \"fairchem.core.units.mlip_unit\" could not be resolved",
+            "range": {
+                "start": {
+                    "line": 141,
+                    "character": 9
+                },
+                "end": {
+                    "line": 141,
+                    "character": 38
+                }
+            },
+            "rule": "reportMissingImports"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/util/parse_calc.py",
+            "severity": "error",
+            "message": "Import \"fairchem.core.units.mlip_unit.api.inference\" could not be resolved",
+            "range": {
+                "start": {
+                    "line": 142,
+                    "character": 9
+                },
+                "end": {
+                    "line": 142,
+                    "character": 52
+                }
+            },
+            "rule": "reportMissingImports"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/febench/util/parse_calc.py",
+            "severity": "error",
+            "message": "\"FAIRChemCalculator\" is unknown import symbol",
+            "range": {
+                "start": {
+                    "line": 143,
+                    "character": 30
+                },
+                "end": {
+                    "line": 143,
+                    "character": 48
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/parse_uma.py",
+            "severity": "error",
+            "message": "Import \"fairchem.core.units.mlip_unit\" could not be resolved",
+            "range": {
+                "start": {
+                    "line": 5,
+                    "character": 5
+                },
+                "end": {
+                    "line": 5,
+                    "character": 34
+                }
+            },
+            "rule": "reportMissingImports"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/parse_uma.py",
+            "severity": "error",
+            "message": "Import \"fairchem.core.units.mlip_unit.api.inference\" could not be resolved",
+            "range": {
+                "start": {
+                    "line": 6,
+                    "character": 5
+                },
+                "end": {
+                    "line": 6,
+                    "character": 48
+                }
+            },
+            "rule": "reportMissingImports"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/parse_uma.py",
+            "severity": "error",
+            "message": "\"FAIRChemCalculator\" is unknown import symbol",
+            "range": {
+                "start": {
+                    "line": 7,
+                    "character": 26
+                },
+                "end": {
+                    "line": 7,
+                    "character": 44
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Argument of type \"UnitCellFilter\" cannot be assigned to parameter \"atoms\" of type \"Atoms\" in function \"__init__\"\n  \"UnitCellFilter\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 24,
+                    "character": 20
+                },
+                "end": {
+                    "line": 24,
+                    "character": 31
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"positions\" for class \"List[Atoms]\"\n  Attribute \"positions\" is unknown",
+            "range": {
+                "start": {
+                    "line": 34,
+                    "character": 17
+                },
+                "end": {
+                    "line": 34,
+                    "character": 26
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"index\" for class \"Atoms\"\n  Attribute \"index\" is unknown",
+            "range": {
+                "start": {
+                    "line": 35,
+                    "character": 24
+                },
+                "end": {
+                    "line": 35,
+                    "character": 29
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"position\" for class \"Atoms\"\n  Attribute \"position\" is unknown",
+            "range": {
+                "start": {
+                    "line": 35,
+                    "character": 56
+                },
+                "end": {
+                    "line": 35,
+                    "character": 64
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"position\" for class \"Atoms\"\n  Attribute \"position\" is unknown",
+            "range": {
+                "start": {
+                    "line": 35,
+                    "character": 99
+                },
+                "end": {
+                    "line": 35,
+                    "character": 107
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"set_constraint\" for class \"List[Atoms]\"\n  Attribute \"set_constraint\" is unknown",
+            "range": {
+                "start": {
+                    "line": 36,
+                    "character": 14
+                },
+                "end": {
+                    "line": 36,
+                    "character": 28
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"set_pbc\" for class \"List[Atoms]\"\n  Attribute \"set_pbc\" is unknown",
+            "range": {
+                "start": {
+                    "line": 37,
+                    "character": 14
+                },
+                "end": {
+                    "line": 37,
+                    "character": 21
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Argument of type \"Atoms | List[Atoms]\" cannot be assigned to parameter \"atoms\" of type \"Atoms\" in function \"__init__\"\n  Type \"Atoms | List[Atoms]\" is not assignable to type \"Atoms\"\n    \"List[Atoms]\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 40,
+                    "character": 24
+                },
+                "end": {
+                    "line": 40,
+                    "character": 29
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Argument of type \"UnitCellFilter\" cannot be assigned to parameter \"atoms\" of type \"Atoms\" in function \"__init__\"\n  \"UnitCellFilter\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 66,
+                    "character": 20
+                },
+                "end": {
+                    "line": 66,
+                    "character": 31
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Argument of type \"UnitCellFilter\" cannot be assigned to parameter \"atoms\" of type \"Atoms\" in function \"__init__\"\n  \"UnitCellFilter\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 77,
+                    "character": 24
+                },
+                "end": {
+                    "line": 77,
+                    "character": 35
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Argument of type \"UnitCellFilter\" cannot be assigned to parameter \"atoms\" of type \"Atoms\" in function \"__init__\"\n  \"UnitCellFilter\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 109,
+                    "character": 24
+                },
+                "end": {
+                    "line": 109,
+                    "character": 35
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Argument of type \"UnitCellFilter\" cannot be assigned to parameter \"atoms\" of type \"Atoms\" in function \"__init__\"\n  \"UnitCellFilter\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 120,
+                    "character": 28
+                },
+                "end": {
+                    "line": 120,
+                    "character": 39
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/relax_metrics.py",
+            "severity": "error",
+            "message": "Argument of type \"UnitCellFilter\" cannot be assigned to parameter \"atoms\" of type \"Atoms\" in function \"__init__\"\n  \"UnitCellFilter\" is not assignable to \"Atoms\"",
+            "range": {
+                "start": {
+                    "line": 130,
+                    "character": 28
+                },
+                "end": {
+                    "line": 130,
+                    "character": 39
+                }
+            },
+            "rule": "reportArgumentType"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/structure_generation.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 34,
+                    "character": 15
+                },
+                "end": {
+                    "line": 34,
+                    "character": 19
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/structure_generation.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 44,
+                    "character": 15
+                },
+                "end": {
+                    "line": 44,
+                    "character": 19
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        },
+        {
+            "file": "/home/jinvk/projects/2025/febench/test/YJ2JM/structure_generation.py",
+            "severity": "error",
+            "message": "Cannot access attribute \"info\" for class \"List[Atoms]\"\n  Attribute \"info\" is unknown",
+            "range": {
+                "start": {
+                    "line": 65,
+                    "character": 15
+                },
+                "end": {
+                    "line": 65,
+                    "character": 19
+                }
+            },
+            "rule": "reportAttributeAccessIssue"
+        }
+    ],
+    "summary": {
+        "filesAnalyzed": 25,
+        "errorCount": 75,
+        "warningCount": 0,
+        "informationCount": 0,
+        "timeInSec": 14.241
+    }
+}
+
