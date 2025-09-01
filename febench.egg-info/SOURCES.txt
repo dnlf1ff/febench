@@ -6,7 +6,6 @@ febench.egg-info/PKG-INFO
 febench.egg-info/SOURCES.txt
 febench.egg-info/dependency_links.txt
 febench.egg-info/entry_points.txt
-febench.egg-info/requires.txt
 febench.egg-info/top_level.txt
 febench/carbon/__init__.py
 febench/carbon/script.py
