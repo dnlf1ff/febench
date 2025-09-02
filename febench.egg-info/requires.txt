@@ -1,2 +1,1 @@
-ase
-numpy
+pandas

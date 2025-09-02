@@ -2,7 +2,6 @@
 requires = [
     "setuptools",
     "wheel",
-    "numpy",
 ]
 build-backend = "setuptools.build_meta"
 # backend-path = ["."]
@@ -12,7 +11,7 @@ build-backend = "setuptools.build_meta"
 name = "febench"
 version = "0.2.0"
 authors = [
-  { name = "Yujin Kang", email = "yjkang@snu.ac.kr" },
+  { name = "Yujin(Will) Kang", email = "yjkang@snu.ac.kr" },
   ]
 
 description = "python package for reproducing the following paper: S. E. Restrepo, N. K. Mohandas, M. Sluiter, and A. T. Paxton, Applicability of universal machine learning interatomic potentials to the simulation of steels, Model. Simul. Mater. Sci. Eng. (2025)."
@@ -20,8 +19,7 @@ description = "python package for reproducing the following paper: S. E. Restrep
 readme = "README.md"
 requires-python = ">=2.7"
 dependencies = [
-    "ase",
-    "numpy",
+    "pandas",
 ]
 
 
