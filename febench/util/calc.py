@@ -1,8 +1,8 @@
 import numpy as np
 from tqdm import tqdm
-from sevenn.calculator import SevenNetCalculator
 from ase.calculators.singlepoint import SinglePointCalculator
 
+# from sevenn.calculator import SevenNetCalculator
 """
 modified based on Jaesun Kim's code
 """
