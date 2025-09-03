@@ -14,6 +14,12 @@ def load_uma(config):
     calc = return_calc(config)
     return calc
 
+def load_esen(config):
+    from febench.calculator.esen_calculator import return_calc
+    calc = return_calc(config)
+    return calc
+
+
 def load_test(config):
     from febench.calculator.test_calculator import return_calc
     calc = return_calc(config)
@@ -32,7 +38,11 @@ def load_calc(config):
     elif calc_type == 'uma':
         calc = load_uma(config)
 
+    elif calc_type == 'esen':
+        calc = load_esen(config)
+
     elif calc_type == 'test':
         calc = load_test(config)
+
 
     return calc

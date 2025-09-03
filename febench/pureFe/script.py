@@ -86,7 +86,7 @@ def process_vacancy(config, calc):
 
 
 def main(argv: list[str] | None=None) -> None:
-    from febench.calculator import load_calc
+    from febench.calculator.loader import load_calc
     import yaml
 
     args = parse_args(argv)

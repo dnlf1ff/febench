@@ -56,7 +56,7 @@ def return_calc(config):
             task_name=MODAL_DCT[modal]
             )
 
-    if conf['dispersion']:
+    if modal == 'omc':
         from sevenn.calculator import D3Calculator
         functional = FUNC_DCT[modal]
         calc_d3 = D3Calculator(functional_name = functional)

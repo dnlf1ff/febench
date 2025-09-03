@@ -101,7 +101,7 @@ def process_carbon(config, calc):
     write(f'{struct_dir}/FeCVac.extxyz',[read(f'{struct_dir}/POSCAR_{label}') for label in labels])
 
 def main(argv: list[str] | None=None) -> None:
-    from febench.calculator import load_calc
+    from febench.calculator.loader import load_calc
     args = parse_args(argv)
     config_dir = args.config
 

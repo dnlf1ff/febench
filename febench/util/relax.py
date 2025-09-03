@@ -63,6 +63,7 @@ def aar_from_config(config, calc, logfile, opt='bulk'):
     arr_args = config['opt'][opt].copy()
     opt = OPT_DICT['fire']
     cell_filter = FILTER_DICT['unitcell']
+    cell_filter = FILTER_DICT['unitcell']
 
     if logfile is not None:
         arr_args['logfile'] = logfile
