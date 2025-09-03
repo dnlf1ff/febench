@@ -8,8 +8,12 @@ febench.egg-info/dependency_links.txt
 febench.egg-info/entry_points.txt
 febench.egg-info/top_level.txt
 febench/calculator/__init__.py
+febench/calculator/dpa_calculator.py
+febench/calculator/esen_calculator.py
 febench/calculator/loader.py
 febench/calculator/mace_calculator.py
+febench/calculator/orb_calculator.py
+febench/calculator/parser.py
 febench/calculator/relax_tools.py
 febench/calculator/sevenn_calculator.py
 febench/calculator/test_calculator.py

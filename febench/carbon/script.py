@@ -1,4 +1,3 @@
-from ase import Atoms
 from ase.io import write, read
 import yaml
 import gc
@@ -43,14 +42,14 @@ def process_carbon(config, calc):
     else:
         write_FeC_poscar(config, a)
         Fe_C = read(f'{struct_dir}/POSCAR_C', format='vasp')
-        ase_atom_relaxer = aar_from_config(config, calc,opt=config["carbon"]["opt"], logfile = f'{log_dir}/FeC_relax.log')
-        Fe_C, conv = ase_atom_relaxer.relax_atoms(Fe_C)
-        Fe_C = ase_atom_relaxer.update_atoms(Fe_C)
+        ase_relaxer = aar_from_config(config, calc,opt=config["carbon"]["opt"], logfile = f'{log_dir}/FeC_relax.log')
+        Fe_C, conv = ase_relaxer.relax_atoms(Fe_C)
+        Fe_C = ase_relaxer.update_atoms(Fe_C)
         Fe_C.info['conv'] = conv
         Fe_C.calc = None
         write(f'{struct_dir}/CONTCAR_C', Fe_C, format='vasp')
         write(f'{struct_dir}/FeC.extxyz', Fe_C, format='extxyz')
-        del ase_atom_relaxer
+        del ase_relaxer
 
     E_FeC = Fe_C.info['e_fr_energy']
     n_FeC = len(Fe_C)
@@ -72,15 +71,15 @@ def process_carbon(config, calc):
         write_poscar_from_config(config, **carbon_args)
 
         atoms = read(f'{struct_dir}/POSCAR_{label}', format='vasp')
-        ase_atom_relaxer = aar_from_config(config, calc, opt=config["carbon"]["opt"], logfile = f'{log_dir}/{label}_relax.log')
-        atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
-        atoms = ase_atom_relaxer.update_atoms(atoms)
+        ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{label}_relax.log', trajfile=f'{log_dir}/{label}_traj.traj')
+        atoms, conv = ase_relaxer.relax_atoms(atoms)
+        atoms = ase_relaxer.update_atoms(atoms)
         atoms.info['conv'] = conv
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{label}', atoms, format='vasp')
 
         if not conv:
-            warnings.warn(f'{idx+1}-th structure, label({label}) did not converge in {config["opt"]["ortho"]["steps"]}steps\n')  
+            warnings.warn(f'{idx+1}-th structure, label({label}) did not converge in {config["opt"]["carbon"]["steps"]}steps\n')  
 
         E_FeCVac = atoms.info['e_fr_energy']
         n_FeCVac = len(atoms)
@@ -89,7 +88,7 @@ def process_carbon(config, calc):
         n_Vac, n_C = carbon_args["n_vac"], carbon_args["n_carbon"]
         E_bind = n_Vac * E_FeVac + n_C * E_FeC - (n_C + n_Vac - 1) * E_Fe - E_FeCVac
 
-        del  ase_atom_relaxer, atoms, carbon_args
+        del  ase_relaxer, atoms, carbon_args
         gc.collect()
 
  

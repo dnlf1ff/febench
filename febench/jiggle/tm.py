@@ -15,13 +15,23 @@ import torch
 from tqdm import tqdm
 import warnings
 
+from febench.calculator.loader import load_calc
 def process_tm(config, calc):
+    args = parse_args(argv)
+    config_dir = args.config
+
+    with open(config_dir, 'r') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+
+    config = parse_config(config)
+    dumpYAML(config, f'{config["cwd"]}/febench_tm_jiggle.yaml')
+    calc = load_calc(config)
+
+
     save_dir = config["tm"]["save"]
     struct_dir = f'{config["tm"]["save"]}/structure'
     log_dir = f'{config["tm"]["save"]}/log'
 
-    dir_args = {'save_dir': save_dir, 'struct_dir': struct_dir,
-                'log_dir': log_dir}
     Fe_bulk = read(f'{config["pureFe"]["save"]}/structure/bulk_opt.extxyz')
     E_Fe = Fe_bulk.info['e_fr_energy']
     a = Fe_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
@@ -46,9 +56,9 @@ def process_tm(config, calc):
         # calc Fe(n-1)M
         atoms = read(f'{struct_dir}/POSCAR_{sol}', format='vasp')
 
-        ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{sol}_relax.log',trajfile=f'{log_dir}/{sol}_traj.traj', opt_type='tm')
-        atoms, FeM_conv = ase_relaxer.relax_atoms(atoms)
-        atoms = ase_relaxer.update_atoms(atoms)
+        ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_relax.log')
+        atoms, FeM_conv = ase_atom_relaxer.relax_atoms(atoms)
+        atoms = ase_atom_relaxer.update_atoms(atoms)
         atoms.info['conv'] = FeM_conv
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{sol}', atoms, format='vasp')
@@ -56,13 +66,13 @@ def process_tm(config, calc):
 
         E_FeM = atoms.info['e_fr_energy']
 
-        del  atoms, ase_relaxer
+        del  atoms, ase_atom_relaxer
         gc.collect()
 
         atoms = read(f'{struct_dir}/POSCAR_{sol}_{sol}_1nn', format='vasp')
-        ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{sol}_{sol}_1nn_relax.log', trajfile = f'{log_dir}/{sol}_{sol}_1nn_traj.traj', opt_type='tm')
-        atoms, conv = ase_relaxer.relax_atoms(atoms)
-        atoms = ase_relaxer.update_atoms(atoms)
+        ase_atom_relaxer = aar_from_config(config, calc,opt=config["tm"]["opt"], logfile = f'{log_dir}/{sol}_{sol}_1nn_relax.log')
+        atoms, conv = ase_atom_relaxer.relax_atoms(atoms)
+        atoms = ase_atom_relaxer.update_atoms(atoms)
 
         if not conv:
             warnings.warn(f'1nn of {sol}-{sol}, did not converge in {config["opt"]["ortho"]["steps"]}steps\n')  
@@ -74,7 +84,7 @@ def process_tm(config, calc):
         E_FeMM = atoms.info["e_fr_energy"]
         E_bind = 2 * E_FeM - E_Fe - atoms.info['e_fr_energy']
         tm_file.write(f'{sol},1,{E_bind},{conv}\n')
-        del  atoms, ase_relaxer
+        del  atoms, ase_atom_relaxer
         gc.collect()
 
         torch.cuda.empty_cache()
