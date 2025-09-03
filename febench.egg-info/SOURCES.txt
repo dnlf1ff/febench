@@ -6,8 +6,14 @@ febench.egg-info/PKG-INFO
 febench.egg-info/SOURCES.txt
 febench.egg-info/dependency_links.txt
 febench.egg-info/entry_points.txt
-febench.egg-info/requires.txt
 febench.egg-info/top_level.txt
+febench/calculator/__init__.py
+febench/calculator/loader.py
+febench/calculator/mace_calculator.py
+febench/calculator/relax_tools.py
+febench/calculator/sevenn_calculator.py
+febench/calculator/test_calculator.py
+febench/calculator/uma_calculator.py
 febench/carbon/__init__.py
 febench/carbon/script.py
 febench/carbon/utils.py
@@ -19,9 +25,6 @@ febench/tm/script.py
 febench/tm/utils.py
 febench/util/__init__.py
 febench/util/calc.py
-febench/util/parse_args.py
-febench/util/parse_calc.py
-febench/util/parse_calc_config.py
-febench/util/parse_config.py
+febench/util/parser.py
 febench/util/relax.py
 febench/util/utils.py

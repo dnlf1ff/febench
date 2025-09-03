@@ -2,10 +2,7 @@ from ase.io import write, read
 import numpy as np
 import sys
 
-from ase.lattice.cubic import BodyCenteredCubic
-from ase.build import make_supercell
-
-def find_vac_idx(atoms, a, vac_pos, config, cont=False):
+def find_vac_idx(atoms, a, vac_pos, config):
     x = vac_pos[0] * a
     y = vac_pos[1] * a
     z = vac_pos[2] * a
@@ -21,18 +18,7 @@ def find_vac_idx(atoms, a, vac_pos, config, cont=False):
 
     index = set(x_indices) & set(y_indices) & set(z_indices)
 
-    try:
-        atoms_index = int(list(index)[0])
-    except:
-        if cont:
-            sys.exit()
-        else:
-            atoms = BodyCenteredCubic(directions=np.diag([1,1,1]), size=(1,1,1),
-                    symbol='Fe', pbc=True, latticeconstant=a)
-            atoms = make_supercell(atoms,np.diag(config['carbon']['supercell']))
-            write(f'{config["carbon"]["save"]}/POSCAR_base',atoms, format='vasp')
-        
-            atoms_index = find_vac_idx(atoms, a, vac_pos, config, cont=True)
+    atoms_index = int(list(index)[0])
     return atoms_index
 
 def write_FeC_poscar(config, a):

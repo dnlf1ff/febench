@@ -1,10 +1,9 @@
-from ase.constraints import FixSymmetry, FixAtoms
 from ase.filters import UnitCellFilter, FrechetCellFilter
-from ase.optimize import LBFGS, FIRE, FIRE2
+from ase.optimize import FIRE
 import numpy as np
 from ase import Atoms
 
-OPT_DICT = {'fire': FIRE, 'fire2':FIRE2,'lbfgs': LBFGS}
+OPT_DICT = {'fire': FIRE}
 FILTER_DICT = {'frechet': FrechetCellFilter, 'unitcell': UnitCellFilter}
 
 
@@ -17,38 +16,22 @@ class AseAtomRelax:
         self,
         calc,
         optimizer,
-        cell_filter=None,
-        mask=None,
-        fix_atoms=False,
-        fix_symm=False,
+        cell_filter,
+        mask,
         fmax=0.0001,
-        steps=1000,
+        steps=100000,
         logfile='ase_relaxer.log'
     ):
         self.calc = calc
         self.optimizer = optimizer
         self.cell_filter = cell_filter
         self.mask = mask
-        self.fix_atoms = fix_atoms
-        self.fix_symm = fix_symm
         self.fmax = fmax
         self.steps = steps
         self.logfile = logfile
 
-    def _get_atoms0(self, atoms_0):
-        atoms = atoms_0.copy()
-        if self.fix_symm:
-            atoms.set_constraint(FixSymmetry(atoms, symprec=1e-5))
-
-        if self.fix_atoms:
-            z =atoms.positions[:,2].copy()
-            indices = [atom.index for atom in atoms if atom.position[2] < np.percentile(z,62) and atom.position[2]>np.percentile(z,38)]
-            atoms.set_constraint(FixAtoms(indices=indices))
-            atoms.set_pbc([True, True, False])
-        return atoms
-
-    def update_atoms(self, atoms_0):
-        atoms = self._get_atoms0(atoms_0)
+    def update_atoms(self, atoms):
+        atoms = atoms.copy()
         atoms.calc = self.calc
 
         try:
@@ -57,53 +40,29 @@ class AseAtomRelax:
             atoms.info['e_fr_energy'] = atoms.get_potential_energy()
         atoms.info['e_0_energy'] = atoms.get_potential_energy()
         atoms.info['force'] = atoms.get_forces()
-        # atoms.info['stress'] = atoms.get_stress()
-        # atoms.info['stress_voigt'] = atoms.get_stress(voigt=True)
-        # atoms.info['volume'] = atoms.get_volume()
-        # atoms.info['cell'] = atoms.cell.array
+        atoms.info['volume'] = atoms.get_volume()
         atoms.info['a'] = atoms.cell.lengths()[0]
         atoms.info['b'] = atoms.cell.lengths()[1]
         atoms.info['c'] = atoms.cell.lengths()[2]
         atoms.info['alpha'] = atoms.cell.angles()[0]
         atoms.info['beta'] = atoms.cell.angles()[1]
         atoms.info['gamma'] = atoms.cell.angles()[2]
-        atoms.info['surface_area'] = np.linalg.norm(np.cross(atoms.cell[0], atoms.cell[1]))
         return atoms
 
-    def relax_atoms(self, atoms_0):
-        atoms = self._get_atoms0(atoms_0)
+    def relax_atoms(self, atoms):
+        atoms = atoms.copy()
         atoms.calc = self.calc
 
-        if self.cell_filter is not None:
-            if self.mask is not None:
-                cell_filter = self.cell_filter(atoms, mask=self.mask)
-            else:
-                cell_filter = self.cell_filter(atoms)
-            optimizer = self.optimizer(cell_filter, logfile=self.logfile)
-        else:
-            optimizer = self.optimizer(atoms, logfile=self.logfile)
+        cell_filter = self.cell_filter(atoms, mask=self.mask)
+        optimizer = self.optimizer(cell_filter, logfile=self.logfile)
         conv = optimizer.run(fmax=self.fmax, steps=self.steps)
         conv = check_atoms_conv(atoms.get_forces())
         return atoms, conv
 
-def aar_from_config(config, calc, opt='bulk', logfile=None):
+def aar_from_config(config, calc, logfile, opt='bulk'):
     arr_args = config['opt'][opt].copy()
-
-    try:
-        opt = OPT_DICT[arr_args['optimizer'].lower()]
-
-    except Exception as e:
-        print(f'error {e} occured while finding optimizer')
-        opt = OPT_DICT['fire']
-        print(f'will use ase.optimize.FIRE')
-
-    cell_filter = arr_args.get('cell_filter', None)
-
-    try:
-        cell_filter = FILTER_DICT[cell_filter.lower()]
-        
-    except Exception as e:
-        cell_filter = None
+    opt = OPT_DICT['fire']
+    cell_filter = FILTER_DICT['unitcell']
 
     if logfile is not None:
         arr_args['logfile'] = logfile

@@ -1,13 +1,12 @@
 Metadata-Version: 2.4
 Name: febench
-Version: 0.2.0
+Version: 1.0.0
 Summary: python package for reproducing the following paper: S. E. Restrepo, N. K. Mohandas, M. Sluiter, and A. T. Paxton, Applicability of universal machine learning interatomic potentials to the simulation of steels, Model. Simul. Mater. Sci. Eng. (2025).
 Author-email: "Yujin(Will) Kang" <yjkang@snu.ac.kr>
 Project-URL: Homepage, https://github.com/dnlf1ff/febench
 Project-URL: Issues, https://github.com/dnlf1ff/febench/issues
 Requires-Python: >=2.7
 Description-Content-Type: text/markdown
-Requires-Dist: pandas
 
 #### Use this
 

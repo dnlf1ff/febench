@@ -3,9 +3,11 @@ from ase.io import write, read
 import yaml
 import gc
 import numpy as np
-from febench.util.parse_args import parse_base_args
+
 from febench.util.utils import dumpYAML 
-from febench.util.parse_config import parse_config_yaml 
+
+from febench.util.parser import parse_args
+from febench.util.parser import parse_config 
 from febench.util.relax import aar_from_config
 from febench.carbon.utils import write_poscar_from_config, write_FeC_poscar
 
@@ -19,14 +21,14 @@ def process_carbon(config, calc):
     struct_dir = f'{config["carbon"]["save"]}/structure'
     log_dir = f'{config["carbon"]["save"]}/log'
 
-    atoms_bulk = read(f'{config["pureFe"]["save"]}/structure/bulk_opt.extxyz')
-    a = atoms_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
-    E_Fe = atoms_bulk.info['e_fr_energy']
-    n_Fe = len(atoms_bulk)
+    Fe_bulk = read(f'{config["pureFe"]["save"]}/structure/bulk_opt.extxyz')
+    a = Fe_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
+    E_Fe = Fe_bulk.info['e_fr_energy']
+    n_Fe = len(Fe_bulk)
 
-    atoms_Vac = read(f'{config["pureFe"]["save"]}/structure/Vac_opt.extxyz')
-    E_FeVac = atoms_Vac.info['e_fr_energy']
-    n_FeVac = len(atoms_Vac)
+    Fe_Vac = read(f'{config["pureFe"]["save"]}/structure/Vac_opt.extxyz')
+    E_FeVac = Fe_Vac.info['e_fr_energy']
+    n_FeVac = len(Fe_Vac)
 
     carbon_config = config['carbon_config']
 
@@ -37,23 +39,23 @@ def process_carbon(config, calc):
         csv_file.write('config,E_bind,E_FeVac,n_FeVac,E_FeC,n_FeC,E_Fe,n_Fe,E_FeCVac,n_FeCVac,n_carbon,n_vacancy,conv\n')
 
     if os.path.isfile(f'{struct_dir}/FeC.extxyz'):
-        atoms_C = read(f'{struct_dir}/FeC.extxyz', format='extxyz')
+        Fe_C = read(f'{struct_dir}/FeC.extxyz', format='extxyz')
     else:
         write_FeC_poscar(config, a)
-        atoms_C = read(f'{struct_dir}/POSCAR_C', format='vasp')
+        Fe_C = read(f'{struct_dir}/POSCAR_C', format='vasp')
         ase_atom_relaxer = aar_from_config(config, calc,opt=config["carbon"]["opt"], logfile = f'{log_dir}/FeC_relax.log')
-        atoms_C, conv = ase_atom_relaxer.relax_atoms(atoms_C)
-        atoms_C = ase_atom_relaxer.update_atoms(atoms_C)
-        atoms_C.info['conv'] = conv
-        atoms_C.calc = None
-        write(f'{struct_dir}/CONTCAR_C', atoms_C, format='vasp')
-        write(f'{struct_dir}/FeC.extxyz', atoms_C, format='extxyz')
+        Fe_C, conv = ase_atom_relaxer.relax_atoms(Fe_C)
+        Fe_C = ase_atom_relaxer.update_atoms(Fe_C)
+        Fe_C.info['conv'] = conv
+        Fe_C.calc = None
+        write(f'{struct_dir}/CONTCAR_C', Fe_C, format='vasp')
+        write(f'{struct_dir}/FeC.extxyz', Fe_C, format='extxyz')
         del ase_atom_relaxer
 
-    E_FeC = atoms_C.info['e_fr_energy']
-    n_FeC = len(atoms_C)
+    E_FeC = Fe_C.info['e_fr_energy']
+    n_FeC = len(Fe_C)
 
-    del atoms_bulk, atoms_Vac, atoms_C
+    del Fe_bulk, Fe_Vac, Fe_C
     gc.collect()
 
     labels = config["carbon"]["label"]
@@ -99,16 +101,16 @@ def process_carbon(config, calc):
     write(f'{struct_dir}/FeCVac.extxyz',[read(f'{struct_dir}/POSCAR_{label}') for label in labels])
 
 def main(argv: list[str] | None=None) -> None:
-    from febench.util.calc import calc_from_config
-    args = parse_base_args(argv)
+    from febench.calculator import load_calc
+    args = parse_args(argv)
     config_dir = args.config
 
     with open(config_dir, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    config = parse_config_yaml(config)
+    config = parse_config(config)
     dumpYAML(config, f'{config["cwd"]}/febench_carbon_config.yaml')
-    calc = calc_from_config(config)
+    calc = load_calc(config)
 
     process_carbon(config, calc)
 

@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "febench"
-version = "0.2.0"
+version = "1.0.0"
 authors = [
   { name = "Yujin(Will) Kang", email = "yjkang@snu.ac.kr" },
   ]
@@ -19,7 +19,6 @@ description = "python package for reproducing the following paper: S. E. Restrep
 readme = "README.md"
 requires-python = ">=2.7"
 dependencies = [
-    "pandas",
 ]
 
 
@@ -37,6 +36,7 @@ packages = [
     "febench.carbon",
     "febench.tm",
     "febench.util",
+    "febench.calculator",
 ]
 
 [project.urls]
