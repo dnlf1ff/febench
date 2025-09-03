@@ -5,7 +5,7 @@ from sevenn.calculator import SevenNetCalculator
 
 HEAD = '/data2/shared_data'
 
-model_path = f'{HEAD}/pretrained/7net_chgTot/checkpoint_best.pth',
+model_path = f'{HEAD}/pretrained/7net_chgTot/checkpoint_best.pth'
 
 def return_calc(config, dispersion=None):
     calc_kwargs = {
