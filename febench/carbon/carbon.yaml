@@ -1,82 +1,8 @@
 ---
-data:
-    input: ./input/Fe.poscar
-    load_args:
-        format: vasp
-        index: 0
-    cwd: .
-
-calculator:
-    calc: omni
-    modal: omat
-    dispersion: false
-    functional: omat
-    calc_args:
-        device: cuda
-
-pureFe:
-    save: ./pureFe
-    run: true
-    cont: false
-    bulk:
-        supercell: [4, 4, 4]
-        opt: bulk
-        run: true
-    vacancy:
-        opt: vacancy
-        run: true
-
-carbon:
-    save: ./carbon
-    run: true
-    supercell: [4, 4, 4]
-    opt: carbon 
-    label: [a1, a2, b1, b2, b3, c1, c2, d, e, f, g, h, i, j, k]
-    cont: false
-
-tm:
-    save: ./tm
-    run: true
-    supercell: [4, 4, 4]
-    solute: [Co, Cr, Cu,Mn, Mo, Nb, Ni, Ti, V]
-    position:
-        base: [1, 0, 0]
-        1nn: [0.5, 0.5, 0.5]
-    opt: tm 
-    cont: false
-
-
-opt:
-    vacancy:
-        fmax: 0.001
-        steps: 100000
-        optimizer: fire
-        cell_filter: unitcell
-        mask: [1, 1, 1, 1, 1, 1]
-
-    bulk:
-        fmax: 0.001
-        steps: 100000
-        optimizer: fire
-        cell_filter: unitcell
-        mask: [1, 1, 1, 0, 0, 0]
-
-    carbon:
-        fmax: 0.001
-        steps: 100000
-        optimizer: fire
-        cell_filter: unitcell
-        mask: [1, 1, 1, 0, 0, 0]
-
-    tm:
-        fmax: 0.001
-        steps: 100000
-        optimizer: fire
-        cell_filter: unitcell
-        mask: [1, 1, 1, 0, 0, 0]
-
-
 carbon_config:
+    # Figure 2 is misprinted. config d, i and f are interchanged
+    # To avoid confusion the script automatically handles this problem
+    # febench.carbon will reproduce Table2
 
     a1:
         carbon: [0.5, 0.5, 0]
@@ -174,4 +100,16 @@ carbon_config:
         n_vacancy: 1
  
  
+    l:
+        carbon: [[0.5, 0.5, 0.25], [0.5, 0.5, 0.75]]
+        vacancy: [0.5, 0.5, 0.5]
+        n_carbon: 2
+        n_vacancy: 1
+ 
+    m:
+        carbon: [[0.5, 0.75, 0.25], [0.5, 0.25, 0.75]]
+        vacancy: [0.5, 0.5, 0.5]
+        n_carbon: 2
+        n_vacancy: 1
+
 ...

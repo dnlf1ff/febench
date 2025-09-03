@@ -46,7 +46,7 @@ def process_tm(config, calc):
         # calc Fe(n-1)M
         atoms = read(f'{struct_dir}/POSCAR_{sol}', format='vasp')
 
-        ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{sol}_relax.log',trajfile=f'{log_dir}/{sol}_traj.traj', opt_type='tm')
+        ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{sol}_relax.log', opt_type='tm')
         atoms, FeM_conv = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
         atoms.info['conv'] = FeM_conv
@@ -60,7 +60,7 @@ def process_tm(config, calc):
         gc.collect()
 
         atoms = read(f'{struct_dir}/POSCAR_{sol}_{sol}_1nn', format='vasp')
-        ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{sol}_{sol}_1nn_relax.log', trajfile = f'{log_dir}/{sol}_{sol}_1nn_traj.traj', opt_type='tm')
+        ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{sol}_{sol}_1nn_relax.log', opt_type='tm')
         atoms, conv = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
 

@@ -9,6 +9,16 @@ def load_mace(config):
     calc = return_calc(config)
     return calc
 
+def load_orb(config):
+    from febench.calculator.orb_calculator import return_calc
+    calc = return_calc(config)
+    return calc
+
+def load_dpa(config):
+    from febench.calculator.dpa_calculator import return_calc
+    calc = return_calc(config)
+    return calc
+
 def load_uma(config):
     from febench.calculator.uma_calculator import return_calc
     calc = return_calc(config)
@@ -44,5 +54,10 @@ def load_calc(config):
     elif calc_type == 'test':
         calc = load_test(config)
 
+    elif calc_type == 'orb':
+        calc = load_orb(config)
+
+    elif calc_type == 'dpa':
+        calc = load_orb(config)
 
     return calc

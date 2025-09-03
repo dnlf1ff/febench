@@ -21,7 +21,7 @@ def process_bulk(config, calc):
 
     input_atoms = read(config["data"]["input"], **config["data"]["load_args"])
     atoms = make_supercell(input_atoms, np.diag(config["pureFe"]["bulk"]["supercell"]))
-    ase_relaxer = aar_from_config(config, calc, logfile=f'{log_dir}/relax.log', trajfile=f'{log_dir}/relax.traj', calc_type='bulk')
+    ase_relaxer = aar_from_config(config, calc, logfile=f'{log_dir}/bulk_relax.log', opt_type='bulk')
    
     if config['pureFe']['cont']:
         csv_file = open(f'{save_dir}/bulk.csv', 'a', buffering=1)
@@ -61,7 +61,7 @@ def process_vacancy(config, calc):
     csv_file = open(f'{save_dir}/bulk.csv', 'a', buffering=1)
 
     atoms=read(f'{struct_dir}/CONTCAR_bulk', **config["data"]["load_args"])
-    ase_relaxer = aar_from_config(config, calc,  logfile=f'{log_dir}/Vac_relax.log', trajfile=f'{log_dir}/Vac_relax.traj', opt_type='vacancy')
+    ase_relaxer = aar_from_config(config, calc,  logfile=f'{log_dir}/Vac_relax.log', opt_type='vacancy')
 
     del atoms[0]
     atoms = ase_relaxer.update_atoms(atoms)

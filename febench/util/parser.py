@@ -12,7 +12,7 @@ def parse_args(argv: list[str]| None=None):
                         help='ompa, mace, orb, esen, dpa, uma, omni')
 
     parser.add_argument('--modal', type=str, default='omat',
-                        help='mpa, omat, matpes')
+                        help='mpa, omat24, matpes_pbe')
 
     return parser.parse_args(argv)
 
@@ -36,7 +36,7 @@ def check_data_config(config):
 def check_calc_config(config):
     conf = config['calculator']
     calc, modal = conf['calc'], conf['modal']
-    assert calc in ['ompa', 'mace', 'orb', 'esen', 'dpa', 'uma', 'omni']
+    assert calc in ['ompa', 'mace', 'orb', 'esen', 'dpa', 'uma', 'omni', 'test']
     if calc in ['mace', 'orb']:
         assert modal in ['mpa', 'omat']
     elif calc in ['esen']:
@@ -53,10 +53,10 @@ def check_calc_config(config):
         print("TEST MODE: 7net-0 will be automatically loaded")
 
     if modal == 'omc':
-        config['calculator']['dispersion']: True
+        config['calculator']['dispersion']: 'true'
         config['calculator']['functional']: 'PBE'
     else:
-        config['calculator']['dispersion']: False
+        config['calculator']['dispersion']: 'false'
         config['calculator']['functional']: 'na'
 
     return config

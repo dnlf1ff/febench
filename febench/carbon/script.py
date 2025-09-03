@@ -42,7 +42,7 @@ def process_carbon(config, calc):
     else:
         write_FeC_poscar(config, a)
         Fe_C = read(f'{struct_dir}/POSCAR_C', format='vasp')
-        ase_relaxer = aar_from_config(config, calc,opt=config["carbon"]["opt"], logfile = f'{log_dir}/FeC_relax.log')
+        ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/FeC.log', opt_type='carbon')
         Fe_C, conv = ase_relaxer.relax_atoms(Fe_C)
         Fe_C = ase_relaxer.update_atoms(Fe_C)
         Fe_C.info['conv'] = conv
@@ -71,7 +71,7 @@ def process_carbon(config, calc):
         write_poscar_from_config(config, **carbon_args)
 
         atoms = read(f'{struct_dir}/POSCAR_{label}', format='vasp')
-        ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{label}_relax.log', trajfile=f'{log_dir}/{label}_traj.traj')
+        ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{label}_relax.log',)
         atoms, conv = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
         atoms.info['conv'] = conv
