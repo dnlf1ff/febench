@@ -35,7 +35,7 @@ def process_carbon(config, calc):
         csv_file = open(f'{save_dir}/carbon.csv', 'a', buffering = 1)
     else:
         csv_file = open(f'{save_dir}/carbon.csv', 'w', buffering = 1)
-        csv_file.write('config,E_bind,E_FeVac,n_FeVac,E_FeC,n_FeC,E_Fe,n_Fe,E_FeCVac,n_FeCVac,n_carbon,n_vacancy,conv\n')
+        csv_file.write('config,E_bind,E_FeVac,n_FeVac,E_FeC,n_FeC,E_Fe,n_Fe,E_FeCVac,n_FeCVac,n_carbon,n_vacancy,opt_cnv,opt_step,force_cnv\n')
 
     if os.path.isfile(f'{struct_dir}/FeC.extxyz'):
         Fe_C = read(f'{struct_dir}/FeC.extxyz', format='extxyz')
@@ -43,9 +43,8 @@ def process_carbon(config, calc):
         write_FeC_poscar(config, a)
         Fe_C = read(f'{struct_dir}/POSCAR_C', format='vasp')
         ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/FeC.log', opt_type='carbon')
-        Fe_C, conv = ase_relaxer.relax_atoms(Fe_C)
+        Fe_C = ase_relaxer.relax_atoms(Fe_C)
         Fe_C = ase_relaxer.update_atoms(Fe_C)
-        Fe_C.info['conv'] = conv
         Fe_C.calc = None
         write(f'{struct_dir}/CONTCAR_C', Fe_C, format='vasp')
         write(f'{struct_dir}/FeC.extxyz', Fe_C, format='extxyz')
@@ -53,6 +52,7 @@ def process_carbon(config, calc):
 
     E_FeC = Fe_C.info['e_fr_energy']
     n_FeC = len(Fe_C)
+    csv_file.write(f'# FeC: energy:{E_FeC}, opt_cnv: {FeC.info["opt_cnv"]}, opt_steps: {FeC.info["opt_step"]}, force_cnv: {FeC.info["force_cnv"]}\n')
 
     del Fe_bulk, Fe_Vac, Fe_C
     gc.collect()
@@ -72,14 +72,11 @@ def process_carbon(config, calc):
 
         atoms = read(f'{struct_dir}/POSCAR_{label}', format='vasp')
         ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{label}_relax.log',)
-        atoms, conv = ase_relaxer.relax_atoms(atoms)
+        atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
-        atoms.info['conv'] = conv
+        conv=f"{atoms.info['opt_cnv']},{atoms.info['opt_step']},{atoms.info['force_cnv']}"
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{label}', atoms, format='vasp')
-
-        if not conv:
-            warnings.warn(f'{idx+1}-th structure, label({label}) did not converge in {config["opt"]["carbon"]["steps"]}steps\n')  
 
         E_FeCVac = atoms.info['e_fr_energy']
         n_FeCVac = len(atoms)

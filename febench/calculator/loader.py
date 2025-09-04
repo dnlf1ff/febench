@@ -58,6 +58,6 @@ def load_calc(config):
         calc = load_orb(config)
 
     elif calc_type == 'dpa':
-        calc = load_orb(config)
+        calc = load_dpa(config)
 
     return calc

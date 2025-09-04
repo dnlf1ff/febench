@@ -36,7 +36,7 @@ def process_tm(config, calc):
         tm_file = open(f'{save_dir}/tm_E_bind.csv', 'a', buffering = 1)
     else:
         tm_file = open(f'{save_dir}/tm_E_bind.csv', 'w', buffering = 1)
-        tm_file.write('sol,E_bind,conv\n')
+        tm_file.write('sol,E_bind,opt_cnv,opt_step,force_cnv\n')
 
     sols = config["tm"]["solute"]
 
@@ -47,9 +47,10 @@ def process_tm(config, calc):
         atoms = read(f'{struct_dir}/POSCAR_{sol}', format='vasp')
 
         ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{sol}_relax.log', opt_type='tm')
-        atoms, FeM_conv = ase_relaxer.relax_atoms(atoms)
+        atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
-        atoms.info['conv'] = FeM_conv
+
+        tm_file.write(f'# FeM: energy:{atoms.info["e_fr_energy"]}, opt_cnv: {atoms.info["opt_cnv"]}, opt_steps: {atoms.info["opt_step"]}, force_cnv: {atoms.info["force_cnv"]}\n')
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{sol}', atoms, format='vasp')
         write(f'{struct_dir}/{sol}_opt.extxyz', atoms, format='extxyz')
@@ -61,19 +62,16 @@ def process_tm(config, calc):
 
         atoms = read(f'{struct_dir}/POSCAR_{sol}_{sol}_1nn', format='vasp')
         ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{sol}_{sol}_1nn_relax.log', opt_type='tm')
-        atoms, conv = ase_relaxer.relax_atoms(atoms)
+        atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
 
-        if not conv:
-            warnings.warn(f'1nn of {sol}-{sol}, did not converge in {config["opt"]["ortho"]["steps"]}steps\n')  
-
-        atoms.info['conv'] = conv
+        conv=f"{atoms.info['opt_cnv']},{atoms.info['opt_step']},{atoms.info['force_cnv']}"
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{sol}_{sol}_1nn', atoms, format='vasp')
 
         E_FeMM = atoms.info["e_fr_energy"]
         E_bind = 2 * E_FeM - E_Fe - atoms.info['e_fr_energy']
-        tm_file.write(f'{sol},1,{E_bind},{conv}\n')
+        tm_file.write(f'{sol},{E_bind},{conv}\n')
         del  atoms, ase_relaxer
         gc.collect()
 

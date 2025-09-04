@@ -1,4 +1,4 @@
-from ase.io import read, write
+fom ase.io import read, write
 from ase.build import make_supercell
 import os, sys, gc
 import numpy as np
@@ -27,7 +27,7 @@ def process_bulk(config, calc):
         csv_file = open(f'{save_dir}/bulk.csv', 'a', buffering=1)
     else:
         csv_file = open(f'{save_dir}/bulk.csv', 'w', buffering=1)
-        csv_file.write('idx,energy,surface_area,natom,a,b,c,alpha,beta,gamma,conv\n')
+        csv_file.write('idx,energy,surface_area,natom,a,b,c,alpha,beta,gamma,opt_cnv,opt_step,force_cnv\n')
 
     atoms = ase_relaxer.update_atoms(atoms)
     atoms.calc = None
@@ -36,9 +36,8 @@ def process_bulk(config, calc):
     input_list = [atoms]
     for idx, atoms in enumerate(tqdm(input_list, desc = 'relaxing bulk structure ...')):
         atoms.calc = calc
-        atoms, conv = ase_relaxer.relax_atoms(atoms)
+        atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
-        atoms.info['conv'] = conv
         atoms.calc = None
     
         write(f"{struct_dir}/bulk_opt.extxyz", atoms, format='extxyz')
@@ -72,10 +71,9 @@ def process_vacancy(config, calc):
     input_list = [atoms]
     for idx, atoms in enumerate(tqdm(input_list, desc = 'relaxing sturcture with one vacancy ...')):
         atoms.calc = calc
-        atoms, conv = ase_relaxer.relax_atoms(atoms)
+        atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
         atoms.calc = None
-        atoms.info['conv'] = conv
         write(f"{struct_dir}/Vac_opt.extxyz", atoms, format='extxyz')
         write(f"{struct_dir}/CONTCAR_Vac", atoms, format='vasp')
         write_csv(csv_file, atoms, idx='vac-post')

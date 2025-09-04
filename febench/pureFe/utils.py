@@ -14,9 +14,9 @@ def write_fe_base(config, a):
 
 def write_csv(file, atoms, idx='pre', delimiter=','):
     try:
-        conv = atoms.info['conv']
+        conv=f"{atoms.info['opt_cnv']},{atoms.info['opt_step']},{atoms.info['force_cnv']}"
     except:
-        conv = '-'
+        conv = '-,-,-'
     file.write(f"{idx}{delimiter}{atoms.info['e_fr_energy']}{delimiter}{delimiter}{len(atoms)}{delimiter}{atoms.info['a']}{delimiter}{atoms.info['b']}{delimiter}{atoms.info['c']}{delimiter}{atoms.info['alpha']}{delimiter}{atoms.info['beta']}{delimiter}{atoms.info['gamma']}{delimiter}{conv}\n")
 
 

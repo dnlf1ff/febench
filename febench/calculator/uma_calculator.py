@@ -68,3 +68,15 @@ def return_calc(config):
     else:
         return calc_uma
 
+if __name__  == '__main__':
+    import sys
+    model, modal = sys.argv[1], sys.argv[2]
+    dispersion = False
+    functional = 'PBE'
+
+    if modal == 'omc':
+        dispersion = True
+
+    config = {'calculator': {'model': model, 'modal': modal, 'dispersion': dispersion, 'functional': functional}}
+
+    return_calc(config)

@@ -62,9 +62,16 @@ class AseAtomRelax:
         # traj = Trajectory(filename=self.trajfile, mode='w', atoms=atoms)
         # opt.attach(traj.write, interval=20)
         opt.run(fmax=self.fmax, steps=self.steps)
-        conv = check_atoms_conv(atoms.get_forces())
+        opt_cnv = opt.converged()
+        opt_steps = opt.get_number_of_steps()
+        force_cnv = check_atoms_conv(atoms.get_forces())
         # traj.close()
-        return atoms, conv
+
+        atoms.info['opt_cnv'] = opt_cnv
+        atoms.info['opt_step'] = opt_steps
+        atoms.info['force_cnv'] = force_cnv
+
+        return atoms
 
 def aar_from_config(config, calc, logfile, trajfile=None, opt_type='carbon'):
     arr_args = config['opt'][opt_type].copy()
