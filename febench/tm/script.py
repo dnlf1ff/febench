@@ -36,7 +36,7 @@ def process_tm(config, calc):
         tm_file = open(f'{save_dir}/tm_E_bind.csv', 'a', buffering = 1)
     else:
         tm_file = open(f'{save_dir}/tm_E_bind.csv', 'w', buffering = 1)
-        tm_file.write('sol,E_bind,opt_cnv,opt_step,force_cnv\n')
+        tm_file.write('sol,E_bind,opt_fa,opt_step,force_cnv\n')
 
     sols = config["tm"]["solute"]
 
@@ -50,7 +50,7 @@ def process_tm(config, calc):
         atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
 
-        tm_file.write(f'# FeM: energy:{atoms.info["e_fr_energy"]}, opt_cnv: {atoms.info["opt_cnv"]}, opt_steps: {atoms.info["opt_step"]}, force_cnv: {atoms.info["force_cnv"]}\n')
+        tm_file.write(f'# FeM: energy:{atoms.info["e_fr_energy"]}, opt_fa: {atoms.info["opt_fa"]}, opt_steps: {atoms.info["opt_step"]}, force_cnv: {atoms.info["force_cnv"]}\n')
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{sol}', atoms, format='vasp')
         write(f'{struct_dir}/{sol}_opt.extxyz', atoms, format='extxyz')
@@ -65,7 +65,7 @@ def process_tm(config, calc):
         atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
 
-        conv=f"{atoms.info['opt_cnv']},{atoms.info['opt_step']},{atoms.info['force_cnv']}"
+        conv=f"{atoms.info['opt_fa']},{atoms.info['opt_step']},{atoms.info['force_cnv']}"
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{sol}_{sol}_1nn', atoms, format='vasp')
 

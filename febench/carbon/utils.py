@@ -2,24 +2,11 @@ from ase.io import write, read
 import numpy as np
 import sys
 
-def find_vac_idx(atoms, a, vac_pos, config):
-    x = vac_pos[0] * a
-    y = vac_pos[1] * a
-    z = vac_pos[2] * a
-
-    pos = atoms.positions.copy()
-    x_pos = pos[:,0]
-    y_pos = pos[:,1]
-    z_pos = pos[:,2]
-
-    x_indices = np.where(x_pos==x)[0]
-    y_indices = np.where(y_pos==y)[0]
-    z_indices = np.where(z_pos==z)[0]
-
-    index = set(x_indices) & set(y_indices) & set(z_indices)
-
-    atoms_index = int(list(index)[0])
-    return atoms_index
+def find_vac_idx(first=True):
+    if first:
+        return 1
+    else:
+        return 8
 
 def write_FeC_poscar(config, a):
     carbon_pos = [0.5, 0.5, 0]
@@ -40,8 +27,9 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
     base = base_atoms.copy()
 
     if n_carbon == 1 and n_vac == 1:
-        vac_idx = find_vac_idx(base, a, vac_pos, config)
+        vac_idx = find_vac_idx()
         # Fe(n-q)Vac(q)
+        print(f'removing {vac_idx}th Fe atom in {base.positions[vac_idx]}')
         del base[vac_idx]
 
         # Fe(n-q)C(p)Vac(q)
@@ -52,9 +40,11 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
         return
 
     if n_carbon == 1 and n_vac == 2:
-        vac_idx_1 = find_vac_idx(base, a, vac_pos[0], config)
+        vac_idx_1 = find_vac_idx()
+        print(f'removing {vac_idx_1}th Fe atom in {base.positions[vac_idx_1]}')
         del base[vac_idx_1]
-        vac_idx_2 = find_vac_idx(base, a, vac_pos[1], config)
+        vac_idx_2 = find_vac_idx(first=False)
+        print(f'removing {vac_idx_2}th Fe atom in {base.positions[vac_idx_2]}')
         del base[vac_idx_2]
 
         # Fe(n-q)C(p)Vac(q)
@@ -81,7 +71,7 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
 
     if n_carbon == 2 and n_vac == 1:
         # Fe(n-q)Vac(q)
-        vac_idx = find_vac_idx(base, a, vac_pos, config)
+        vac_idx = find_vac_idx()
         del base[vac_idx]
 
         carbon_pos_1 = carbon_pos[0]

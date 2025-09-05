@@ -4,8 +4,8 @@ import numpy as np
 from ase import Atoms
 # from ase.io import Trajectory
 
-OPT_DICT = {'fire': FIRE}
-FILTER_DICT = {'frechet': FrechetCellFilter, 'unitcell': UnitCellFilter}
+# OPT_DICT = {'fire': FIRE}
+# FILTER_DICT = {'frechet': FrechetCellFilter, 'unitcell': UnitCellFilter}
 
 
 """
@@ -19,15 +19,15 @@ class AseAtomRelax:
         optimizer,
         cell_filter,
         mask,
-        fmax=0.0001,
-        steps=10000,
+        fmax=0.001,
+        steps=300,
         logfile='ase_relaxer.log',
         # trajfile='ase_traj.traj',
 
     ):
         self.calc = calc
-        self.optimizer = optimizer
-        self.cell_filter = cell_filter
+        # self.optimizer = optimizer
+        # self.cell_filter = cell_filter
         self.mask = mask
         self.fmax = fmax
         self.steps = steps
@@ -57,30 +57,30 @@ class AseAtomRelax:
         atoms = atoms.copy()
         atoms.calc = self.calc
 
-        cell_filter = self.cell_filter(atoms, mask=self.mask)
-        opt = self.optimizer(cell_filter, logfile=self.logfile)
+        cell_filter = UnitCellFilter(atoms, mask=self.mask)
+        opt = FIRE(cell_filter, logfile=self.logfile)
         # traj = Trajectory(filename=self.trajfile, mode='w', atoms=atoms)
         # opt.attach(traj.write, interval=20)
         opt.run(fmax=self.fmax, steps=self.steps)
-        opt_cnv = opt.converged()
+        opt_fa = opt.fa
         opt_steps = opt.get_number_of_steps()
         force_cnv = check_atoms_conv(atoms.get_forces())
         # traj.close()
 
-        atoms.info['opt_cnv'] = opt_cnv
+        atoms.info['opt_fa'] = opt_fa
         atoms.info['opt_step'] = opt_steps
         atoms.info['force_cnv'] = force_cnv
-
+        del cell_filter, opt
         return atoms
 
 def aar_from_config(config, calc, logfile, trajfile=None, opt_type='carbon'):
     arr_args = config['opt'][opt_type].copy()
-    opt = OPT_DICT['fire']
-    cell_filter = FILTER_DICT['unitcell']
+    # opt = OPT_DICT['fire']
+    # cell_filter = FILTER_DICT['unitcell']
 
     arr_args['calc'] = calc
-    arr_args['optimizer'] = opt
-    arr_args['cell_filter'] = cell_filter
+    # arr_args['optimizer'] = opt
+    # arr_args['cell_filter'] = cell_filter
     arr_args['logfile'] = logfile 
     # arr_args['trajfile'] = trajfile 
 

@@ -35,26 +35,26 @@ def process_carbon(config, calc):
         csv_file = open(f'{save_dir}/carbon.csv', 'a', buffering = 1)
     else:
         csv_file = open(f'{save_dir}/carbon.csv', 'w', buffering = 1)
-        csv_file.write('config,E_bind,E_FeVac,n_FeVac,E_FeC,n_FeC,E_Fe,n_Fe,E_FeCVac,n_FeCVac,n_carbon,n_vacancy,opt_cnv,opt_step,force_cnv\n')
+        csv_file.write('config,E_bind,E_FeVac,n_FeVac,E_FeC,n_FeC,E_Fe,n_Fe,E_FeCVac,n_FeCVac,n_carbon,n_vacancy,opt_fa,opt_step,force_cnv\n')
 
-    if os.path.isfile(f'{struct_dir}/FeC.extxyz'):
-        Fe_C = read(f'{struct_dir}/FeC.extxyz', format='extxyz')
+    if config['carbon']['cont']:
+        FeC = read(f'{struct_dir}/FeC.extxyz', format='extxyz')
     else:
         write_FeC_poscar(config, a)
-        Fe_C = read(f'{struct_dir}/POSCAR_C', format='vasp')
+        FeC = read(f'{struct_dir}/POSCAR_C', format='vasp')
         ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/FeC.log', opt_type='carbon')
-        Fe_C = ase_relaxer.relax_atoms(Fe_C)
-        Fe_C = ase_relaxer.update_atoms(Fe_C)
-        Fe_C.calc = None
-        write(f'{struct_dir}/CONTCAR_C', Fe_C, format='vasp')
-        write(f'{struct_dir}/FeC.extxyz', Fe_C, format='extxyz')
+        FeC = ase_relaxer.relax_atoms(FeC)
+        FeC = ase_relaxer.update_atoms(FeC)
+        FeC.calc = None
+        write(f'{struct_dir}/CONTCAR_C', FeC, format='vasp')
+        write(f'{struct_dir}/FeC.extxyz', FeC, format='extxyz')
         del ase_relaxer
 
-    E_FeC = Fe_C.info['e_fr_energy']
-    n_FeC = len(Fe_C)
-    csv_file.write(f'# FeC: energy:{E_FeC}, opt_cnv: {FeC.info["opt_cnv"]}, opt_steps: {FeC.info["opt_step"]}, force_cnv: {FeC.info["force_cnv"]}\n')
+    E_FeC = FeC.info['e_fr_energy']
+    n_FeC = len(FeC)
+    csv_file.write(f'# FeC: energy:{E_FeC}, opt_fa: {FeC.info["opt_fa"]}, opt_steps: {FeC.info["opt_step"]}, force_cnv: {FeC.info["force_cnv"]}\n')
 
-    del Fe_bulk, Fe_Vac, Fe_C
+    del Fe_bulk, Fe_Vac, FeC
     gc.collect()
 
     labels = config["carbon"]["label"]
@@ -74,7 +74,7 @@ def process_carbon(config, calc):
         ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{label}_relax.log',)
         atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
-        conv=f"{atoms.info['opt_cnv']},{atoms.info['opt_step']},{atoms.info['force_cnv']}"
+        conv=f"{atoms.info['opt_fa']},{atoms.info['opt_step']},{atoms.info['force_cnv']}"
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{label}', atoms, format='vasp')
 
