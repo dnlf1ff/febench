@@ -20,7 +20,7 @@ class AseAtomRelax:
         cell_filter,
         mask,
         fmax=0.001,
-        steps=300,
+        steps=100000,
         logfile='ase_relaxer.log',
         # trajfile='ase_traj.traj',
 
@@ -67,9 +67,8 @@ class AseAtomRelax:
         force_cnv = check_atoms_conv(atoms.get_forces())
         # traj.close()
 
-        atoms.info['opt_fa'] = opt_fa
         atoms.info['opt_step'] = opt_steps
-        atoms.info['force_cnv'] = force_cnv
+        atoms.info['force_cnv'] = force_cnv 
         del cell_filter, opt
         return atoms
 

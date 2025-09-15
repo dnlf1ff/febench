@@ -9,6 +9,7 @@ def write_poscar_from_config(config, solute, a):
     # Fe(n-1)M
     base = read(f'{config["cwd"]}/POSCAR_base', format='vasp')
     base_idx = 32
+    base_pos = [1, 0, 0]
 
     print(f'removing {base_idx}th Fe atom in {base.positions[base_idx]}')
     del base[base_idx]
@@ -25,6 +26,6 @@ def write_poscar_from_config(config, solute, a):
 
     # Fe(n-2)M(2)
     base_copy.append(solute)
-    base_copy.positions[-1] = np.array(nn1_pos) * a
+    base_copy.positions[-1] = np.array(nn_pos) * a
     write(f'{struct_dir}/POSCAR_{solute}_{solute}_1nn', base_copy, format='vasp')
 

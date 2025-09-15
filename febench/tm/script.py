@@ -26,17 +26,14 @@ def process_tm(config, calc):
     E_Fe = Fe_bulk.info['e_fr_energy']
     a = Fe_bulk.info['a']/config['pureFe']['bulk']['supercell'][0]
 
-    Fe_Vac = read(f'{config["pureFe"]["save"]}/structure/Vac_opt.extxyz')
-    E_FeVac = Fe_Vac.info['e_fr_energy']
-
-    del Fe_bulk, Fe_Vac
+    del Fe_bulk
     gc.collect()
 
     if config['tm']['cont']:
         tm_file = open(f'{save_dir}/tm_E_bind.csv', 'a', buffering = 1)
     else:
         tm_file = open(f'{save_dir}/tm_E_bind.csv', 'w', buffering = 1)
-        tm_file.write('sol,E_bind,opt_fa,opt_step,force_cnv\n')
+        tm_file.write('sol,E_Fe,E_FeM,E_FeMM,E_bind,opt_step,force_cnv\n')
 
     sols = config["tm"]["solute"]
 
@@ -50,7 +47,6 @@ def process_tm(config, calc):
         atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
 
-        tm_file.write(f'# FeM: energy:{atoms.info["e_fr_energy"]}, opt_fa: {atoms.info["opt_fa"]}, opt_steps: {atoms.info["opt_step"]}, force_cnv: {atoms.info["force_cnv"]}\n')
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{sol}', atoms, format='vasp')
         write(f'{struct_dir}/{sol}_opt.extxyz', atoms, format='extxyz')
@@ -65,13 +61,14 @@ def process_tm(config, calc):
         atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
 
-        conv=f"{atoms.info['opt_fa']},{atoms.info['opt_step']},{atoms.info['force_cnv']}"
+        conv=f"{atoms.info['opt_step']},{atoms.info['force_cnv']}"
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{sol}_{sol}_1nn', atoms, format='vasp')
+        write(f'{struct_dir}/{sol}_{sol}_1nn_opt.extxyz', atoms, format='extxyz')
 
         E_FeMM = atoms.info["e_fr_energy"]
-        E_bind = 2 * E_FeM - E_Fe - atoms.info['e_fr_energy']
-        tm_file.write(f'{sol},{E_bind},{conv}\n')
+        E_bind = 2 * E_FeM - E_Fe - E_FeMM
+        tm_file.write(f'{sol},{E_bind},{E_Fe},{E_FeM},{E_FeMM},{conv}\n')
         del  atoms, ase_relaxer
         gc.collect()
 

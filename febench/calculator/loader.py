@@ -30,6 +30,12 @@ def load_esen(config):
     return calc
 
 
+def load_grace(config):
+    from febench.calculator.grace_calculator import return_calc
+    calc = return_calc(config)
+    return calc
+
+
 def load_test(config):
     from febench.calculator.test_calculator import return_calc
     calc = return_calc(config)
@@ -59,5 +65,8 @@ def load_calc(config):
 
     elif calc_type == 'dpa':
         calc = load_dpa(config)
+
+    elif calc_type == 'grace':
+        calc = load_grace(config)
 
     return calc
