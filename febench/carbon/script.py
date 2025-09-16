@@ -35,7 +35,7 @@ def process_carbon(config, calc):
         csv_file = open(f'{save_dir}/carbon.csv', 'a', buffering = 1)
     else:
         csv_file = open(f'{save_dir}/carbon.csv', 'w', buffering = 1)
-        csv_file.write('config,E_bind,E_FeVac,n_FeVac,E_FeC,n_FeC,E_Fe,n_Fe,E_FeCVac,n_FeCVac,n_carbon,n_vacancy,opt_step,force_cnv\n')
+        csv_file.write('config,E_bind,E_FeVac,n_FeVac,E_FeC,n_FeC,E_Fe,n_Fe,E_FeCVac,n_FeCVac,n_carbon,n_vacancy,opt_step,force_cnv,opt\n')
 
     if config['carbon']['cont']:
         FeC = read(f'{struct_dir}/FeC.extxyz', format='extxyz')
@@ -74,7 +74,7 @@ def process_carbon(config, calc):
         ase_relaxer = aar_from_config(config, calc, logfile = f'{log_dir}/{label}_relax.log',)
         atoms = ase_relaxer.relax_atoms(atoms)
         atoms = ase_relaxer.update_atoms(atoms)
-        conv=f"{atoms.info['opt_step']},{atoms.info['force_cnv']}"
+        conv=f"{atoms.info['opt_step']},{atoms.info['force_cnv']},{atoms.info['opt']}"
         atoms.calc = None
         write(f'{struct_dir}/CONTCAR_{label}', atoms, format='vasp')
 
@@ -89,7 +89,7 @@ def process_carbon(config, calc):
         gc.collect()
 
  
-        csv_file.write(f'{label},{E_bind},{E_FeVac},{n_FeVac},{E_FeC},{n_FeC},{E_Fe},{n_Fe},{E_FeCVac},{n_FeCVac},{n_C},{n_Vac},{conv}\n')
+        csv_file.write(f'{label},{E_bind},{E_FeVac},{n_FeVac},{E_FeC},{n_FeC},{E_Fe},{n_Fe},{E_FeCVac},{n_FeCVac},{n_C},{n_Vac},{conv},\n')
 
     torch.cuda.empty_cache()
     csv_file.close()

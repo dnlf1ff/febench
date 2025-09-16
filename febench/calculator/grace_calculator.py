@@ -27,13 +27,12 @@ def return_calc(config):
     else:
         model_name = "GRACE-2L-OMAT-L"
 
-    model_path =  CALC_DCT[model_name]
 
+    model_path =  CALC_DCT[model_name]
     print(f"[GRACE] model alias={model_name}, modal(task_name)={modal}")
     print(f"[GRACE] full model name: {model_path}")
 
 
-    calc = grace_fm(model_name)
-    # MODELS_NAME_LIST = MODELS_METADATA.keys()
+    calc = grace_fm(model_path)
 
     return calc

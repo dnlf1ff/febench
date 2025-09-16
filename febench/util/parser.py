@@ -36,10 +36,10 @@ def check_data_config(config):
 def check_calc_config(config):
     conf = config['calculator']
     calc, modal = conf['calc'], conf['modal']
-    assert calc in ['ompa', 'mace', 'orb', 'esen', 'dpa', 'uma', 'omni', 'test']
+    assert calc in ['ompa', 'mace', 'orb', 'esen', 'dpa', 'uma', 'omni', 'test', 'grace', 'nequip']
     if calc in ['mace', 'orb']:
         assert modal in ['mpa', 'omat']
-    elif calc in ['esen']:
+    elif calc in ['esen', 'grace']:
         assert modal in ['oam', 'omat']
     elif calc in ['dpa']:
         assert modal in ['omat', 'mp']
@@ -49,6 +49,8 @@ def check_calc_config(config):
         assert modal in ['mpa', 'omat24']
     elif calc in ['omni']:
         assert modal in ['mpa', 'omat24', 'matpes_pbe']
+    elif calc in ['nequip']:
+        assert modal in ['oam']
     elif calc == 'test':
         print("TEST MODE: 7net-0 will be automatically loaded")
 

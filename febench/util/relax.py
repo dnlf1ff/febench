@@ -20,7 +20,7 @@ class AseAtomRelax:
         cell_filter,
         mask,
         fmax=0.001,
-        steps=100000,
+        steps=1000,
         logfile='ase_relaxer.log',
         # trajfile='ase_traj.traj',
 
@@ -69,6 +69,10 @@ class AseAtomRelax:
 
         atoms.info['opt_step'] = opt_steps
         atoms.info['force_cnv'] = force_cnv 
+        opt_fin = True
+        if opt_steps >= self.steps:
+            opt_fin = False
+        atoms.info['opt'] = opt_fin
         del cell_filter, opt
         return atoms
 

@@ -41,7 +41,10 @@ def load_test(config):
     calc = return_calc(config)
     return calc
 
-
+def load_nequip(config):
+    from febench.calculator.nequip_calculator import return_calc
+    calc = return_calc(config)
+    return calc
 
 def load_calc(config):
     calc_type = config['calculator']['calc']
@@ -68,5 +71,8 @@ def load_calc(config):
 
     elif calc_type == 'grace':
         calc = load_grace(config)
+
+    elif calc_type == 'nequip':
+        calc = load_nequip(config)
 
     return calc
