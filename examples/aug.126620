@@ -1,0 +1,8 @@
+ERROR:uma-omat 1e-2 frech
+[Errno 2] No such file or directory: '/data2_1/jinvk/25_Fe/250916_fmax_1e-2_frech/uma/omat/tm/tm_E_bind.csv'
+ERROR:omni-mpa 0.5e-3 frech
+[Errno 2] No such file or directory: '/data2_1/jinvk/25_Fe/250916_fmax_0.5e-3_frech/omni/mpa/tm/tm_E_bind.csv'
+ERROR:omni-omat24 0.5e-3 frech
+[Errno 2] No such file or directory: '/data2_1/jinvk/25_Fe/250916_fmax_0.5e-3_frech/omni/omat24/tm/tm_E_bind.csv'
+ERROR:omni-matpes_pbe 0.5e-3 frech
+[Errno 2] No such file or directory: '/data2_1/jinvk/25_Fe/250916_fmax_0.5e-3_frech/omni/matpes_pbe/tm/tm_E_bind.csv'

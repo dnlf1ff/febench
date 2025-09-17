@@ -11,7 +11,7 @@ def write_poscar_from_config(config, solute, a):
     base_idx = 32
     base_pos = [1, 0, 0]
 
-    print(f'removing {base_idx}th Fe atom in {base.positions[base_idx]}')
+    # print(f'removing {base_idx}th Fe atom in {base.positions[base_idx]}')
     del base[base_idx]
 
     base.append(solute)
@@ -21,7 +21,7 @@ def write_poscar_from_config(config, solute, a):
     nn_idx = 1
     nn_pos = [0.5, 0.5, 0.5]
     base_copy = base.copy()
-    print(f'removing {nn_idx}th Fe atom in {base.positions[nn_idx]}')
+    # print(f'removing {nn_idx}th Fe atom in {base.positions[nn_idx]}')
     del base_copy[nn_idx]
 
     # Fe(n-2)M(2)

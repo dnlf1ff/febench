@@ -29,7 +29,7 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
     if n_carbon == 1 and n_vac == 1:
         vac_idx = find_vac_idx()
         # Fe(n-q)Vac(q)
-        print(f'removing {vac_idx}th Fe atom in {base.positions[vac_idx]}')
+        # print(f'removing {vac_idx}th Fe atom in {base.positions[vac_idx]}')
         del base[vac_idx]
 
         # Fe(n-q)C(p)Vac(q)
@@ -41,10 +41,10 @@ def write_poscar_from_config(config, a, label, n_carbon, n_vac, carbon_pos, vac_
 
     if n_carbon == 1 and n_vac == 2:
         vac_idx_1 = find_vac_idx()
-        print(f'removing {vac_idx_1}th Fe atom in {base.positions[vac_idx_1]}')
+        # print(f'removing {vac_idx_1}th Fe atom in {base.positions[vac_idx_1]}')
         del base[vac_idx_1]
         vac_idx_2 = find_vac_idx(first=False)
-        print(f'removing {vac_idx_2}th Fe atom in {base.positions[vac_idx_2]}')
+        # print(f'removing {vac_idx_2}th Fe atom in {base.positions[vac_idx_2]}')
         del base[vac_idx_2]
 
         # Fe(n-q)C(p)Vac(q)
