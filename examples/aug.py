@@ -21,6 +21,14 @@ carbon_config = ['a1', 'a2', 'b1', 'b2', 'b3', 'c1', 'c2', 'd', 'e', 'f', 'g', '
 tm_config = ['Co', 'Cr', 'Cu', 'Mn', 'Mo', 'Nb', 'Ni', 'Ti', 'V']
 import sys
 
+def get_columns():
+    columns = ['dft']
+    for model, dct in model_dct.items():
+        for modal in dct['modal']:
+            label = f'{model}-{modal}'
+            columns.append(label)
+    return columns
+ 
 def save_carbon(fmax, cell):
     prefix = f'{run_params["date"]}_fmax_{fmax}_{cell}'
     df = pd.DataFrame(index=carbon_config)
@@ -74,24 +82,45 @@ def get_tm_errors(fmax, cell):
  
 
 def get_abs(fmax, cell):
-    carbon_error = pd.read_csv(f'carbon_error_fmax_{fmax}_{cell}.csv', index_col=0)
+    prefix = f'250916_fmax_{fmax}_{cell}'
+    carbon_error = pd.read_csv(f'{prefix}/carbon_error_fmax_{fmax}_{cell}.csv', index_col=0)
     for col in carbon_error.columns:
-        print(carbon_error[col])
         carbon_error[col] = carbon_error[col].apply(lambda x: abs(x))
-        print(carbon_error[col])
-    carbon_error.to_csv(f'carbon_abs_fmax_{fmax}_{cell}.csv')
+    carbon_error.to_csv(f'{prefix}/carbon_abs_fmax_{fmax}_{cell}.csv')
 
-    tm_error = pd.read_csv(f'tm_error_fmax_{fmax}_{cell}.csv', index_col=0)
+    tm_error = pd.read_csv(f'{prefix}/tm_error_fmax_{fmax}_{cell}.csv', index_col=0)
     for col in tm_error.columns:
-        print(tm_error[col])
         tm_error[col] = tm_error[col].apply(lambda x: abs(x))
-        print(tm_error[col])
-    carbon_error.to_csv(f'tm_abs_fmax_{fmax}_{cell}.csv')
+    tm_error.to_csv(f'{prefix}/tm_abs_fmax_{fmax}_{cell}.csv')
 
+def get_mae(fmax, cell):
+    suffix = f'abs_fmax_{fmax}_{cell}'
+    prefix = f'250916_fmax_{fmax}_{cell}'
+    carbon_df = pd.read_csv(f'{prefix}/carbon_{suffix}.csv', index_col=0)
+    tm_df = pd.read_csv(f'{prefix}/tm_{suffix}.csv', index_col=0)
+    carbon_mae = []
+    tm_mae = []
+    for carbon_col in carbon_df.columns:
+        carbon_mae.append(carbon_df[carbon_col].mean())
+    for tm_col in tm_df.columns:
+        tm_mae.append(tm_df[tm_col].mean())
+
+    return carbon_mae, tm_mae
 
 
 if __name__ == '__main__':
+    carbon_df = pd.DataFrame()
+    tm_df = pd.DataFrame()
+    mlips = get_columns()
+    carbon_df['mlip'] = mlips
+    tm_df['mlip'] = mlips
     for fmax in run_params['fmax']:
         for cell in run_params['cell']:
             get_abs(fmax, cell)
+            label = f'fmax_{fmax}_{cell}'
+            carbon_mae_list, tm_mae_list = get_mae(fmax, cell)
+            carbon_df[label] = carbon_mae_list
+            tm_df[label] = tm_mae_list
 
+    carbon_df.to_csv('carbon_mae.csv', index=False)
+    tm_df.to_csv('tm_mae.csv', index=False)
