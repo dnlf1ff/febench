@@ -135,40 +135,16 @@ def tm_legend():
     fig.tight_layout()
     fig.savefig('tm_legend.png', dpi=300, bbox_inches='tight', transparent=True)
 
-
-def tm_elwise_grid(mlips, df, filename=None):
-    import matplotlib.pyplot as plt
-    import matplotlib.gridspec as gridspec
-    import matplotlib.pyplot as plt
-    import matplotlib.gridspec as gridspec
-
-    models = [
-        "ompa-mpa", "ompa-omat", "MACE-mpa","MACE-omat",
-        "ORB-mpa","ORB-omat","eSEN-oam","eSEN-omat",
-        "DPA-mp","DPA-omat","UMA-omc","UMA-omat",
-        "omni-mpa","omni-omat","omni-matpes_pbe",
-        "grace-oam","grace-omat", "nequip-oam"
-    ]
-
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-
-models = [
-    "ompa-mpa", "ompa-omat", "MACE-mpa","MACE-omat",
-    "ORB-mpa","ORB-omat","eSEN-oam","eSEN-omat",
-    "DPA-mp","DPA-omat","UMA-omc","UMA-omat",
-    "omni-mpa","omni-omat","omni-matpes_pbe",
-    "grace-oam","grace-omat", "nequip-oam"
-]
-
-
+def plot_tm_grid(label):
+    df = pd.read_csv(f'{label}/tm_aug_{label}.csv')
+    dft = df['dft'].tolist()
     fig = plt.figure(figsize=(10,14))
     # 3 main rows (4 models each), plus 1 row for grace
     gs = gridspec.GridSpec(5, 4, figure=fig)
     lims = [-0.55, 0.55]
 
     # First 12 models in top 3 rows
-    for i, m in enumerate(models[:-3]):
+    for i, m in enumerate(models[:-6]):
         print(m)
         row, col = divmod(i, 4)
         ax = fig.add_subplot(gs[row, col])
@@ -191,8 +167,28 @@ models = [
             ax.set_yticks([])
 
     # Last two models on their own row
-    for k, m in enumerate(models[-3:]):
-        ax = fig.add_subplot(gs[4, k])
+    for k, m in enumerate(models[-6:-3]):
+        ax = fig.add_subplot(gs[3, k])
+        mlip_values = df[m].tolist()
+        ax.text(0.05, 0.95, m, transform=ax.transAxes, fontsize=15, fontweight='bold',verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', edgecolor='none',alpha=0.8))
+        ax.set_box_aspect(1)
+        ax.set_xlim(lims)
+        ax.set_ylim(lims)
+        ax.axhline(0, color='grey', linestyle='--', linewidth=1, zorder=0)
+        ax.axvline(0, color='grey', linestyle='--', linewidth=1, zorder=0)
+        for j, solute in enumerate(solutes):
+            ax.scatter(dft[j],mlip_values[j], color='k', marker='x', alpha=1, zorder=3)        
+            ax.scatter(dft[j], mlip_values[j], color=solute_color_dict[solute], s=200, edgecolors='k', linewidth=1, alpha=0.7, zorder=2)
+        ax.plot([-0.6,0.6],[-0.6,0.6],"k--",lw=1, zorder=1, alpha=0.8)
+        # ax.set_xlabel("DFT", fontsize=17, labelpad=3)
+        ax.set_xticks([])
+        if k == 0:
+            ax.set_ylabel("MLIP", fontsize=17, labelpad=3)
+        else:
+            ax.set_yticks([])
+        
+    for l, m in enumerate(models[-3:]):
+        ax = fig.add_subplot(gs[4, l])
         mlip_values = df[m].tolist()
         ax.text(0.05, 0.95, m, transform=ax.transAxes, fontsize=15, fontweight='bold',verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', edgecolor='none',alpha=0.8))
         ax.set_box_aspect(1)
@@ -206,17 +202,19 @@ models = [
         ax.plot([-0.6,0.6],[-0.6,0.6],"k--",lw=1, zorder=1, alpha=0.8)
         ax.set_xlabel("DFT", fontsize=17, labelpad=3)
 
-        if k == 0:
+        if l == 0:
             ax.set_ylabel("MLIP", fontsize=17, labelpad=3)
         else:
             ax.set_yticks([])
-        
 
-    # plt.savefig('tm_el.png', dpi=300, bbox_inches='tight', transparent=True)
+    plt.savefig(f'{label}.png', dpi=300, bbox_inches='tight', transparent=True)
 
 
     # plt.tight_layout()
     plt.show()
+
+# for label in label_list:
+#     plot_tm_grid(label)
 
 def tm_elwise(mlips, df, filename=None):
     lims = [-0.5, 0.35]
@@ -284,3 +282,44 @@ def tm_1panel(mlip, df, filename=None):
     fig.tight_layout()
     plt.savefig(f'{filename}.png', dpi=300, bbox_inches='tight', transparent=True)
     plt.show()
+
+
+def plot_mae():
+    plt.figure(figsize=(15,5.5))
+    vlines = [i+0.5 for i in range(len(carbon)-1)]
+    mlip_list = carbon['mlip']
+    sns.barplot(
+        data=carbon, 
+        x="mlip", 
+        y="MAE", 
+        width = 0.6,
+        palette=color_dict,   # pick any color scheme
+        errorbar=None        # removes those ugly error bars
+    )
+    plt.xticks(ticks=range(len(mlip_list)), labels=mlip_list, ha='center', rotation=30)
+    plt.title(r"Carbon in Fe")
+    plt.axhline(0, color="k", linestyle="--", linewidth=1,zorder=0)  # reference line
+    for v in vlines:
+        plt.axvline(v, color="grey", linestyle="--", linewidth=1,zorder=0)
+    plt.ylabel(r"MAE (eV)")
+    plt.xlabel("")
+
+    plt.tick_params(axis="x", which="major", pad=5)
+    filename = 'fig_mae_carbon.png'
+    plt.savefig(filename, transparent=True)
+
+    plt.show()
+
+def sns_df_prep(df, mlip_list):
+    sns_df = pd.DataFrame(columns=['index','DFT', 'mlip', 'pred','delta','abs_error'], index=range(len(mlip_list)*len(df)))
+    idx = 0
+    for i in range(len(df)):
+        for mlip in mlip_list:
+            sns_df.loc[idx, 'index'] = i
+            sns_df.loc[idx, 'DFT'] = df.loc[i, 'DFT']
+            sns_df.loc[idx, 'mlip'] =  mlip
+            sns_df.loc[idx, 'pred'] = df.loc[i, mlip]
+            sns_df.loc[idx, 'delta'] = df.loc[i, mlip+'_delta']
+            sns_df.loc[idx, 'abs_error'] = abs(df.loc[i, mlip+'_delta'])
+            idx += 1
+    return sns_df
